@@ -6,7 +6,7 @@ The sprite sheet only uses a fixed set of 16 of the 32 colours, meaning art must
 
 This tool allows you to work with a sprite sheet in the full 32 displayable colours. It is not a drawing tool, the 128X128 sprite sheet must be created externally and imported. Colours will be quantized to the nearest PICO-8 colour. The output is a sprite sheet with remapped colours such that it can be imported into PICO-8, along with code for drawing each sprite.
 
-You can label rectangular regions of the sprite sheet.
-You can combine one or more regions into a sprite, with each region individually positioned.
-You can defined multiple scenes with individual screen palettes, enabling more than 16 colours to be used overall.
-Palette swaps and masking can be applied at all levels.
+  - You can label rectangular regions of the sprite sheet.
+  - You can combine one or more regions into a sprite, with each region individually positioned.
+  - You can define multiple scenes with individual screen palettes, enabling more than 16 colours to be used overall.
+  - Palette swaps and masking can be applied at all levels.
