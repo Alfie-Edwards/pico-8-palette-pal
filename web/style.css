@@ -11,7 +11,42 @@
     text-rendering: geometricPrecision;
 }
 
-:root { --px: 4px;  --px2: 8px }
+:root {
+    --px: 4px;
+    --px2: 8px;
+    --col-0: #000000;
+    --col-1: #1D2B53;
+    --col-2: #7E2553;
+    --col-3: #008751;
+    --col-4: #AB5236;
+    --col-5: #5F574F;
+    --col-6: #C2C3C7;
+    --col-7: #FFF1E8;
+    --col-8: #FF004D;
+    --col-9: #FFA300;
+    --col-10: #FFEC27;
+    --col-11: #00E436;
+    --col-12: #29ADFF;
+    --col-13: #83769C;
+    --col-14: #FF77A8;
+    --col-15: #FFCCAA;
+    --col-neg-16: #291814;
+    --col-neg-15: #111D35;
+    --col-neg-14: #422136;
+    --col-neg-13: #125359;
+    --col-neg-12: #742F29;
+    --col-neg-11: #49333B;
+    --col-neg-10: #A28879;
+    --col-neg-9: #F3EF7D;
+    --col-neg-8: #BE1250;
+    --col-neg-7: #FF6C24;
+    --col-neg-6: #A8E72E;
+    --col-neg-5: #00B543;
+    --col-neg-4: #065AB5;
+    --col-neg-3: #754665;
+    --col-neg-2: #FF6E59;
+    --col-neg-1: #FF9D81;
+}
 
 .pixel-corners-2 {
     clip-path: polygon(
@@ -66,7 +101,7 @@
 body, html {
     height: 100%;
     width: 100%;
-    background-color: #222;
+    background-color: var(--col-neg-14);
     margin: 0;
 }
 
@@ -99,7 +134,7 @@ body, html {
 }
 
 .ui-panel {
-    background-color: #333;
+    background-color: var(--col-0);
     box-sizing: border-box;
     min-width: 0;
     min-height: 0;
@@ -110,7 +145,7 @@ body, html {
     flex-direction: column;
 }
 
-.ui-panel > * {
+.ui-panel > section > * {
     margin: 8px;
     box-sizing: border-box;
 }
@@ -122,24 +157,60 @@ body, html {
     margin-top: 16px;
 }
 
+
+.panel-stack { position: relative; }
+.tab-pane { display: none; height: 100%; width: 100%; }
+
+#tab_sheet:checked  ~ .layout-table #edit .tab-pane[data-tab="sheet"],
+#tab_sheet:checked  ~ .layout-table #selection .tab-pane[data-tab="sheet"],
+#tab_sprites:checked ~ .layout-table #edit .tab-pane[data-tab="sprites"],
+#tab_sprites:checked ~ .layout-table #selection .tab-pane[data-tab="sprites"],
+#tab_scenes:checked ~ .layout-table #edit .tab-pane[data-tab="scenes"],
+#tab_scenes:checked ~ .layout-table #selection .tab-pane[data-tab="scenes"],
+#tab_export:checked ~ .layout-table #edit .tab-pane[data-tab="export"],
+#tab_export:checked ~ .layout-table #selection .tab-pane[data-tab="export"] {
+  display: flex;
+  flex-direction: column;
+}
+
+#tab_sheet:checked  ~ .layout-table #tab-panel label[for="tab_sheet"],
+#tab_sprites:checked ~ .layout-table #tab-panel label[for="tab_sprites"],
+#tab_scenes:checked ~ .layout-table #tab-panel label[for="tab_scenes"],
+#tab_export:checked ~ .layout-table #tab-panel label[for="tab_export"] {
+  background: var(--col-0);
+  margin-left: 0px;
+}
+
+/* Override grid sizes based on selected tab */
+#tab_scenes:checked ~ .layout-table #table-edit-box {
+    width: 60%;
+}
+#tab_scenes:checked ~ .layout-table #table-selection-box {
+    width: 30%;
+}
+
 .ui-tab {
-    background-color: #444;
+    background-color: var(--col-neg-16);
     padding: 16px;
     margin: 8px -20px 8px 0px;
-    color: #fff;
+    color: var(--col-7);
     flex: 1;
     display: flex;
     align-items: center;
     justify-content: center;
 }
 
-.ui-tab:hover {
-  background: #666;
+.ui-tab:has(input:checked) {
+  background: var(--col-0);
+    margin-left: 0px;
 }
 
-.ui-tab > label {
+.ui-tab:hover {
+    margin-left: -8px;
+}
+
+.ui-tab > span {
     transform: rotate(-90deg);
-    display: inline-block;
 }
 
 #spritesheet {
@@ -150,13 +221,13 @@ body, html {
 
 #load-spritesheet-button-label {
   font-size: 14px;
-  background: #555;
-  color: #fff;
+  background: var(--col-neg-11);
+  color: var(--col-7);
   padding: 16px;
   cursor: pointer;
   text-align: center;
 }
 
 #load-spritesheet-button-label:hover {
-  background: #777;
+  background: var(--col-neg-3);
 }
