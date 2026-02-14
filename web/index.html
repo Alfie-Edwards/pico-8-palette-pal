@@ -5,13 +5,34 @@
     <meta name="viewport" content="width=device-width,initial-scale=1" />
     <title>PICO-8 palette pal</title>
     <link rel="stylesheet", href="style.css">
+
   </head>
 
   <body>
-    <div>
-        <input type="file" id="load_spritesheet_button" accept="image/png" />
-        <canvas id="spritesheet"></canvas>
-    </div>
+    <table class="layout-table">
+        <tr>
+            <td id="table-tab-bar">
+                <div id="tab-panel">
+                    <div class="ui-tab p8scii pixel-corners-1"><label>import</label></div>
+                    <div class="ui-tab p8scii pixel-corners-1"><label>sheet</label></div>
+                    <div class="ui-tab p8scii pixel-corners-1"><label>sprites</label></div>
+                    <div class="ui-tab p8scii pixel-corners-1"><label>scenes</label></div>
+                    <div class="ui-tab p8scii pixel-corners-1"><label>export</label></div>
+                </div>
+            </td>
+            <td id="table-edit-box">
+                <div class="ui-panel pixel-corners-2">
+                    <canvas id="spritesheet"></canvas>
+                    <input type="file" id="load-spritesheet-button" accept="image/png" hidden />
+                    <label for="load-spritesheet-button" id="load-spritesheet-button-label" class="p8scii pixel-corners-1">load spritesheet</label>
+                </div>
+            </td>
+            <td id="table-selection-box">
+                <div class="ui-panel pixel-corners-2">
+                </div>
+            </td>
+        </tr>
+    </table>
 
     <script type="module" src="./main.js" defer></script>
   </body>

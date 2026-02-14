@@ -6,20 +6,25 @@ const model = new Model();
 const els = Object.fromEntries(
     [
         "spritesheet",
-        "load_spritesheet_button",
-    ].map( id => [id, document.getElementById(id)])
+        "load-spritesheet-button",
+    ].map( id => [id.replaceAll("-", "_"), document.getElementById(id)])
 )
+console.log(els)
 
 const ctx = els.spritesheet.getContext("2d", { alpha: true });
+spritesheet.width = 128;
+spritesheet.height = 128;
+ctx.imageSmoothingEnabled = false;
 
 async function loadRgba(file) {
   const bitmap = await createImageBitmap(file);
 
   const canvas = new OffscreenCanvas(bitmap.width, bitmap.height);
-  const ctx = canvas.getContext("2d");
 
-  ctx.drawImage(bitmap, 0, 0);
-  const imageData = ctx.getImageData(0, 0, bitmap.width, bitmap.height);
+  const offscreen_ctx = canvas.getContext("2d");
+
+  offscreen_ctx.drawImage(bitmap, 0, 0);
+  const imageData = offscreen_ctx.getImageData(0, 0, bitmap.width, bitmap.height);
 
   const clamped = imageData.data;
   const rgba = new Uint8Array(

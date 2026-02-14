@@ -1,4 +1,162 @@
+@font-face {
+  font-family: "P8SCII";
+  src: url("/fonts/P8SCII.ttf") format("truetype");
+  font-display: swap;
+}
+
+.p8scii {
+    font-family: "P8SCII";
+    -webkit-font-smoothing: none;
+    font-smooth: never;
+    text-rendering: geometricPrecision;
+}
+
+:root { --px: 4px;  --px2: 8px }
+
+.pixel-corners-2 {
+    clip-path: polygon(
+        var(--px2) 0,
+        calc(100% - var(--px2)) 0,
+
+        calc(100% - var(--px2)) var(--px),
+        calc(100% - var(--px)) var(--px),
+        calc(100% - var(--px)) var(--px2),
+        100% var(--px2),
+
+        100% calc(100% - var(--px2)),
+
+        calc(100% - var(--px)) calc(100% - var(--px2)),
+        calc(100% - var(--px)) calc(100% - var(--px)),
+        calc(100% - var(--px2)) calc(100% - var(--px)),
+        calc(100% - var(--px2)) 100%,
+
+        var(--px2) 100%,
+
+        var(--px2) calc(100% - var(--px)),
+        var(--px) calc(100% - var(--px)),
+        var(--px) calc(100% - var(--px2)),
+        0 calc(100% - var(--px2)),
+
+        0 var(--px2),
+
+        var(--px) var(--px2),
+        var(--px) var(--px),
+        var(--px2) var(--px),
+        var(--px2) 0
+    );
+}
+
+.pixel-corners-1 {
+    clip-path: polygon(
+        var(--px) 0,
+        calc(100% - var(--px)) 0,
+        calc(100% - var(--px)) var(--px),
+        100% var(--px),
+        100% calc(100% - var(--px)),
+        calc(100% - var(--px)) calc(100% - var(--px)),
+        calc(100% - var(--px)) 100%,
+        var(--px) 100%,
+        var(--px) calc(100% - var(--px)),
+        0 calc(100% - var(--px)),
+        0 var(--px),
+        var(--px) var(--px)
+    );
+}
+
+body, html {
+    height: 100%;
+    width: 100%;
+    background-color: #222;
+    margin: 0;
+}
+
+.layout-table {
+    position: absolute;
+    inset: 8px;
+    width: calc(100% - 16px);
+    height: calc(100% - 16px);
+    border-collapse: collapse;
+    table-layout: fixed;
+}
+
+.layout-table td {
+    height: 100%;
+    vertical-align: top;
+}
+
+#table-tab-bar {
+    padding: 8px;
+    width: 64px;
+}
+
+#table-edit-box {
+    padding: 8px;
+    width: 30%;
+}
+
+#table-selection-box {
+    padding: 6px;
+}
+
+.ui-panel {
+    background-color: #333;
+    box-sizing: border-box;
+    min-width: 0;
+    min-height: 0;
+    padding: 8px;
+    width: 100%;
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+}
+
+.ui-panel > * {
+    margin: 8px;
+    box-sizing: border-box;
+}
+
+#tab-panel {
+    display: flex;
+    flex-direction: column;
+    height: calc(100% - 32px);
+    margin-top: 16px;
+}
+
+.ui-tab {
+    background-color: #444;
+    padding: 16px;
+    margin: 8px -20px 8px 0px;
+    color: #fff;
+    flex: 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.ui-tab:hover {
+  background: #666;
+}
+
+.ui-tab > label {
+    transform: rotate(-90deg);
+    display: inline-block;
+}
+
 #spritesheet {
-    margin: 50;
     aspect-ratio: 1;
+    width: calc(100% - 16px);
+    image-rendering: pixelated;
+}
+
+#load-spritesheet-button-label {
+  font-size: 14px;
+  background: #555;
+  color: #fff;
+  padding: 16px;
+  cursor: pointer;
+  text-align: center;
+}
+
+#load-spritesheet-button-label:hover {
+  background: #777;
 }
