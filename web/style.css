@@ -251,6 +251,8 @@ canvas {
 
 .edit-box {
     display: flex;
+    height: 112px;
+    flex-grow: 1;
 }
 
 .edit-grid {
@@ -270,6 +272,18 @@ canvas {
     margin: 0px;
 }
 
-#selected-spritelet {
-    margin-right: 16px;
+.image-container {
+  width: 100%;
+  height: 100%;
+  place-items: center;    /* center the canvas */
+  min-width: 0px;
+  min-height: 0px;
+  margin-right: 16px;
+}
+
+.image-container > canvas {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  display: block;
 }
