@@ -135,7 +135,6 @@ input {
 
 .ui-panel {
     background-color: var(--col-0);
-    height: 100%;
 }
 
 .ui-panel > section > * {
@@ -156,6 +155,7 @@ input {
     height: 100%;
     width: 100%;
     flex-direction: column;
+    justify-content: flex-end;
     gap: 16px;
     box-sizing: border-box;
     min-width: 0;
@@ -214,6 +214,8 @@ input {
 
 #spritesheet {
     flex-grow: 1;
+    min-height: 0;
+    align-self: center;
 }
 
 .button {
@@ -280,8 +282,9 @@ input {
 }
 
 .hline {
-    width: 100%;
-    border-top: 8px dashed var(--col-neg-14);
+    width: calc(100% + 32px);
+    border-top: 6px dashed var(--col-neg-16);
+    margin: 0px -16px;
 }
 
 #minimap {
