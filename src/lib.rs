@@ -60,6 +60,10 @@ impl Model {
 
     // SPRITELETS
 
+    pub fn spritelet_ids(&self) -> Vec<Id> {
+        self.spritelets.keys().cloned().collect()
+    }
+
     pub fn new_spritelet(&mut self, region: Region) -> Id {
         let id = new_id();
         self.spritelets.insert(id, Spritelet {
@@ -86,11 +90,16 @@ impl Model {
     pub fn delete_spritelet(&mut self, id: Id) {
         self.spritelets.remove(&id);
         for sprite in self.sprites.values_mut() {
-            sprite.delete_spritelet(id)
+            sprite.delete_spritelet(id);
         }
     }
 
     // SPRITES
+
+    pub fn sprite_ids(&self) -> Vec<Id> {
+        self.sprites.keys().cloned().collect()
+    }
+
 
    pub fn new_sprite(&mut self) -> Id {
         let id = new_id();
@@ -120,6 +129,10 @@ impl Model {
     }
 
     // SCENES
+
+    pub fn scene_ids(&self) -> Vec<Id> {
+        self.scenes.keys().cloned().collect()
+    }
 
     pub fn new_scene(&mut self) -> Id {
         let id = new_id();
