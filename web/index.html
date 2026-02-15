@@ -18,10 +18,10 @@
     <tr>
       <td id="table-tab-bar">
         <div id="tab-panel">
-          <label class="ui-tab p8scii pixel-corners-1" for="tab_sheet"><span>sheet</span></label>
-          <label class="ui-tab p8scii pixel-corners-1" for="tab_sprites"><span>sprites</span></label>
-          <label class="ui-tab p8scii pixel-corners-1" for="tab_scenes"><span>scenes</span></label>
-          <label class="ui-tab p8scii pixel-corners-1" for="tab_export"><span>export</span></label>
+          <label class="ui-tab pixel-corners-1" for="tab_sheet"><span>sheet</span></label>
+          <label class="ui-tab pixel-corners-1" for="tab_sprites"><span>sprites</span></label>
+          <label class="ui-tab pixel-corners-1" for="tab_scenes"><span>scenes</span></label>
+          <label class="ui-tab pixel-corners-1" for="tab_export"><span>export</span></label>
         </div>
       </td>
 
@@ -30,25 +30,37 @@
 
           <section class="tab-pane" data-tab="sheet">
             <canvas id="spritesheet"></canvas>
-            <input type="file" id="load-spritesheet-button" accept="image/png" hidden />
-            <label for="load-spritesheet-button" id="load-spritesheet-button-label"
-              class="p8scii pixel-corners-1">load spritesheet</label>
-            <p class="p8scii" style="color:var(--col-7)">edit selected spritelet here</p>
+            <div id="edit-selected-spritelet" class="edit-box" hidden="true">
+              <canvas id="selected-spritelet"></canvas>
+              <form class="edit-grid">
+                <label for="selected-spritelet-x">x</label>
+                <input id="selected-spritelet-x" type="number" max="128" min="0">
+
+                <label for="selected-spritelet-y">y</label>
+                <input id="selected-spritelet-y" type="number" max="128" min="0">
+
+                <label for="selected-spritelet-width">width</label>
+                <input id="selected-spritelet-width" type="number" max="128" min="1">
+
+                <label for="selected-spritelet-height">height</label>
+                <input id="selected-spritelet-height" type="number" max="128" min="1">
+              </form>
+            </div>
           </section>
 
           <section class="tab-pane" data-tab="sprites">
-            <p class="p8scii" style="color:var(--col-7)">display selected sprite</p>
-            <p class="p8scii" style="color:var(--col-7)">edit selected sprite</p>
-            <p class="p8scii" style="color:var(--col-7)">list components of sprite</p>
-            <p class="p8scii" style="color:var(--col-7)">edit each component</p>
+            <p style="color:var(--col-7)">display selected sprite</p>
+            <p style="color:var(--col-7)">edit selected sprite</p>
+            <p style="color:var(--col-7)">list components of sprite</p>
+            <p style="color:var(--col-7)">edit each component</p>
           </section>
 
           <section class="tab-pane" data-tab="scenes">
-            <p class="p8scii" style="color:var(--col-7)">list sprites in scene here</p>
+            <p style="color:var(--col-7)">list sprites in scene here</p>
           </section>
 
           <section class="tab-pane" data-tab="export">
-            <p class="p8scii" style="color:var(--col-7)">generate quantized spritesheet here</p>
+            <p style="color:var(--col-7)">generate quantized spritesheet here</p>
           </section>
         </div>
       </td>
@@ -56,19 +68,25 @@
       <td id="table-selection-box">
         <div class="ui-panel pixel-corners-2 panel-stack" id="selection">
           <section class="tab-pane" data-tab="sheet">
-            <p class="p8scii" style="color:var(--col-7)">list spritelets here</p>
+            <div class="toolbar">
+              <input type="file" id="load-spritesheet-button" accept="image/png" hidden />
+              <label for="load-spritesheet-button"
+                class="button pixel-corners-1">load spritesheet</label>
+                <button id="add-spritelet" class="button pixel-corners-1">new component</button>
+            </div>
+            <div class="item-display"> </div>
           </section>
 
           <section class="tab-pane" data-tab="sprites">
-            <p class="p8scii" style="color:var(--col-7)">list sprites here</p>
+            <p style="color:var(--col-7)">list sprites here</p>
           </section>
 
           <section class="tab-pane" data-tab="scenes">
-            <p class="p8scii" style="color:var(--col-7)">list scenes here</p>
+            <p style="color:var(--col-7)">list scenes here</p>
           </section>
 
           <section class="tab-pane" data-tab="export">
-            <p class="p8scii" style="color:var(--col-7)">list draw functions here</p>
+            <p style="color:var(--col-7)">list draw functions here</p>
           </section>
         </div>
       </td>

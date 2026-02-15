@@ -4,13 +4,6 @@
   font-display: swap;
 }
 
-.p8scii {
-    font-family: "P8SCII";
-    -webkit-font-smoothing: none;
-    font-smooth: never;
-    text-rendering: geometricPrecision;
-}
-
 :root {
     --px: 4px;
     --px2: 8px;
@@ -105,6 +98,22 @@ body, html {
     margin: 0;
 }
 
+* {
+    font-family: "P8SCII";
+    -webkit-font-smoothing: none;
+    font-smooth: never;
+    text-rendering: geometricPrecision;
+    color: var(--col-7);
+}
+
+canvas {
+    image-rendering: pixelated;
+}
+
+[hidden] {
+  visibility: hidden;
+}
+
 .layout-table {
     position: absolute;
     inset: 8px;
@@ -157,7 +166,6 @@ body, html {
     margin-top: 16px;
 }
 
-
 .panel-stack { position: relative; }
 .tab-pane { display: none; height: 100%; width: 100%; }
 
@@ -183,7 +191,7 @@ body, html {
 
 /* Override grid sizes based on selected tab */
 #tab_scenes:checked ~ .layout-table #table-edit-box {
-    width: 60%;
+    width: 70%;
 }
 #tab_scenes:checked ~ .layout-table #table-selection-box {
     width: 30%;
@@ -193,7 +201,6 @@ body, html {
     background-color: var(--col-neg-16);
     padding: 16px;
     margin: 8px -20px 8px 0px;
-    color: var(--col-7);
     flex: 1;
     display: flex;
     align-items: center;
@@ -213,21 +220,56 @@ body, html {
     transform: rotate(-90deg);
 }
 
-#spritesheet {
-    aspect-ratio: 1;
-    width: calc(100% - 16px);
-    image-rendering: pixelated;
-}
-
-#load-spritesheet-button-label {
+.button {
   font-size: 14px;
   background: var(--col-neg-11);
-  color: var(--col-7);
   padding: 16px;
   cursor: pointer;
   text-align: center;
+  border: none;
 }
 
-#load-spritesheet-button-label:hover {
+.button:hover {
   background: var(--col-neg-3);
+}
+
+.toolbar {
+    display: flex;
+    flex-direction: row;
+}
+
+.toolbar > * {
+    margin-right: 16px;
+}
+
+.item-display {
+    display: flex;
+    overflow-y: scroll;
+    flex-direction: row;
+    flex-wrap: wrap;
+}
+
+.edit-box {
+    display: flex;
+}
+
+.edit-grid {
+    display: grid;
+    grid-template-columns: auto 64px;
+    gap: 8px;
+    align-items: center;
+    height: fit-content;
+    margin-left: auto;
+}
+
+.edit-grid > input {
+    border: 0px;
+    background-color: var(--col-7);
+    color: var(--col-0);
+    padding: 4px;
+    margin: 0px;
+}
+
+#selected-spritelet {
+    margin-right: 16px;
 }

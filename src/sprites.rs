@@ -58,8 +58,8 @@ impl SpriteSheet {
             h = W - y;
         }
         let mut result = Vec::with_capacity(w * h * 4);
-        for row in x..(x + w) {
-            for col in y..(y + h) {
+        for row in y..(y + h) {
+            for col in x..(x + w) {
                 match color_map.get(self.data[col][row]) {
                     Some(color_id) =>  {
                         result.extend(PICO8_COLOURS[(color_id + 16) as usize].iter());
