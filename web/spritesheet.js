@@ -1,6 +1,6 @@
-import {els, model} from "../globals.js";
-import { get_selected_spritelet } from "./spritelets.js";
-import { onDrag } from "./utils.js";
+import {els, model} from "globals.js";
+import { get_selected_spritelet } from "spritelets.js";
+import { onDrag } from "utils.js";
 
 const spritesheet_ctx = els.spritesheet.getContext("2d", { alpha: true });
 const minimap_ctx = els.minimap.getContext("2d", { alpha: true });
