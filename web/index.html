@@ -78,11 +78,14 @@
       <div id="edit-spritelet-divider" class="hline"></div>
       <div class="toolbar">
         <canvas id="minimap"></canvas>
-        <div class="button-stack">
-          <label>zoom<input id="spritesheet-zoom" value="1" type="number" min="1" max="8"></label>
-          <label>x<input id="spritesheet-pan-x" value="0" type="number" min="0" max="128"></label>
-          <label>y<input id="spritesheet-pan-y" value="0" type="number" min="0" max="128"></label>
-        </div>
+        <form class="edit-grid">
+          <label for="spritesheet-zoom">zoom</label>
+          <input id="spritesheet-zoom" value="1" type="number" min="1" max="8">
+          <label for="spritesheet-pan-x">x</label>
+          <input id="spritesheet-pan-x" value="0" type="number" min="0" max="128">
+          <label for="spritesheet-pan-y">y</label>
+          <input id="spritesheet-pan-y" value="0" type="number" min="0" max="128">
+        </form>
         <div class="button-stack">
           <input type="file" id="load-spritesheet-button" accept="image/png" hidden/>
           <label for="load-spritesheet-button" class="button pixel-corners-1">load image</label>

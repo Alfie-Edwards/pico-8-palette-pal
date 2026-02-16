@@ -209,8 +209,8 @@ onDrag(els.selector_anchor_tl, (e) => {
     const r = spritelet.region.x + spritelet.region.w;
     const b = spritelet.region.y + spritelet.region.h;
     var [sheet_x, sheet_y] = get_sheet_coords(e.clientX, e.clientY);
-    sheet_x = Math.max(0, Math.min(r + 1, sheet_x));
-    sheet_y = Math.max(0, Math.min(b + 1, sheet_y));
+    sheet_x = Math.max(0, Math.min(r - 1, sheet_x));
+    sheet_y = Math.max(0, Math.min(b - 1, sheet_y));
     const dx = sheet_x - spritelet.region.x;
     const dy = sheet_y - spritelet.region.y;
 
@@ -231,7 +231,7 @@ onDrag(els.selector_anchor_tr, (e) => {
     const b = spritelet.region.y + spritelet.region.h;
     var [sheet_x, sheet_y] = get_sheet_coords(e.clientX, e.clientY);
     sheet_x = Math.max(spritelet.region.x + 1, Math.min(128, sheet_x));
-    sheet_y = Math.max(0, Math.min(b + 1, sheet_y));
+    sheet_y = Math.max(0, Math.min(b - 1, sheet_y));
     const dy = sheet_y - spritelet.region.y;
 
     spritelet.region = new Region(
@@ -250,7 +250,7 @@ onDrag(els.selector_anchor_bl, (e) => {
     }
     const r = spritelet.region.x + spritelet.region.w;
     var [sheet_x, sheet_y] = get_sheet_coords(e.clientX, e.clientY);
-    sheet_x = Math.max(0, Math.min(r + 1, sheet_x));
+    sheet_x = Math.max(0, Math.min(r - 1, sheet_x));
     sheet_y = Math.max(spritelet.region.y + 1, Math.min(128, sheet_y));
     const dx = sheet_x - spritelet.region.x;
 
