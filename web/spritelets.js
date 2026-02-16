@@ -1,6 +1,6 @@
-import {els, model, Region} from "globals.js";
-import { update_selector_box } from "spritesheet.js";
-import { onDrag } from "utils.js";
+import {els, model, Region} from "./globals.js";
+import { update_selector_box } from "./spritesheet.js";
+import { onDrag } from "./utils.js";
 
 var selected_spritelet_id = null;
 

@@ -1,5 +1,5 @@
-import init, { Model, Region } from "pkg/pico_8_palette_pal.js";
-export { Region } from "pkg/pico_8_palette_pal.js";
+import init, { Model, Region } from "./pkg/pico_8_palette_pal.js";
+export { Region } from "./pkg/pico_8_palette_pal.js";
 
 await init();
 export const model = new Model();
