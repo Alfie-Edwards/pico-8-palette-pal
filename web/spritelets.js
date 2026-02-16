@@ -129,8 +129,7 @@ function refresh_selected_spritelet() {
 
 function refresh_spritelet_list() {
     els.spritelet_list.replaceChildren();
-    for (const id in model.spritelet_ids()) {
-        console.log(id);
+    for (const id of model.spritelet_ids()) {
         const container = document.createElement("div");
         container.classList.add("image-container")
 
@@ -138,8 +137,8 @@ function refresh_spritelet_list() {
             set_selected_spritelet_id(Number(id));
         });
 
-        const spritelet = model.get_spritelet(id);
-        const canvas = document.createElement("canvas");
+        var spritelet = model.get_spritelet(id);
+        var canvas = document.createElement("canvas");
         var ctx = canvas.getContext("2d", { alpha: true });
         canvas.width = spritelet.region.w;
         canvas.height = spritelet.region.h;
@@ -158,8 +157,20 @@ function refresh_spritelet_list() {
 
 els.delete_spritelet.addEventListener("click", (e) => {
     if (selected_spritelet_id != null) {
+        var ids = model.spritelet_ids();
+        var new_id = null;
+        for (var i in ids) {
+            if (ids[i] == selected_spritelet_id) {
+                if (i > 0) {
+                    new_id = ids[i - 1];
+                } else if (ids.length > 1) {
+                    new_id = ids[1];
+                }
+                break;
+            }
+        }
         model.delete_spritelet(selected_spritelet_id);
         refresh_spritelet_list();
-        set_selected_spritelet_id(null);
+        set_selected_spritelet_id(new_id);
     }
 });

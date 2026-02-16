@@ -61,7 +61,9 @@ impl Model {
     // SPRITELETS
 
     pub fn spritelet_ids(&self) -> Vec<Id> {
-        self.spritelets.keys().cloned().collect()
+        let mut ids: Vec<Id> = self.spritelets.keys().cloned().collect();
+        ids.sort();
+        return ids;
     }
 
     pub fn new_spritelet(&mut self, region: Region) -> Id {
@@ -97,7 +99,9 @@ impl Model {
     // SPRITES
 
     pub fn sprite_ids(&self) -> Vec<Id> {
-        self.sprites.keys().cloned().collect()
+        let mut ids: Vec<Id> = self.sprites.keys().cloned().collect();
+        ids.sort();
+        return ids;
     }
 
 
@@ -131,7 +135,9 @@ impl Model {
     // SCENES
 
     pub fn scene_ids(&self) -> Vec<Id> {
-        self.scenes.keys().cloned().collect()
+        let mut ids: Vec<Id> = self.scenes.keys().cloned().collect();
+        ids.sort();
+        return ids;
     }
 
     pub fn new_scene(&mut self) -> Id {
