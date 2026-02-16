@@ -316,8 +316,8 @@ input {
     background-color: white;
     border: 1px solid black;
     position: absolute;
-    width: 7px;
-    height: 7px;
-    margin-left: -3px;
-    margin-top: -3px;
+    width: 13px;
+    height: 13px;
+    margin-left: -6px;
+    margin-top: -6px;
 }
