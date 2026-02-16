@@ -1,0 +1,42 @@
+name: Build and publish to GitHub page
+
+on:
+  push:
+    branches: ["main"]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Install Rust + wasm target
+        uses: actions-rs/toolchain@v1
+        with:
+          toolchain: stable
+          targets: wasm32-unknown-unknown
+          override: true
+
+      - name: Install wasm-pack
+        run: cargo install --locked wasm-pack
+
+      - name: Build wasm
+        run: wasm-pack build --release --target web --out-dir ./web/pkg
+
+      - name: Setup Pages
+        uses: actions/configure-pages@v4
+
+      - name: Upload artifact
+        uses: actions/upload-pages-artifact@v3
+        with:
+          path: ./web
+
+      - name: Deploy to GitHub Pages
+        uses: actions/deploy-pages@v4
