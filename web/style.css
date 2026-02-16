@@ -1,6 +1,6 @@
 @font-face {
   font-family: "P8SCII";
-  src: url("/fonts/P8SCII.ttf") format("truetype");
+  src: url("./fonts/P8SCII.ttf") format("truetype");
   font-display: swap;
 }
 
