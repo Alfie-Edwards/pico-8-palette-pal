@@ -67,7 +67,14 @@
 
   <div class="pixel-corners-2 ui-panel" id="right-panel">
     <section class="tab-pane" data-tab="sheet">
-      <canvas id="spritesheet"></canvas>
+      <div id="spritesheet-box">
+        <canvas id="spritesheet"></canvas>
+        <div id="selector-box" hidden></div>
+        <div id="selector-anchor-tl" hidden></div>
+        <div id="selector-anchor-tr" hidden></div>
+        <div id="selector-anchor-bl" hidden></div>
+        <div id="selector-anchor-br" hidden></div>
+      </div>
       <div id="edit-spritelet-divider" class="hline"></div>
       <div class="toolbar">
         <canvas id="minimap"></canvas>

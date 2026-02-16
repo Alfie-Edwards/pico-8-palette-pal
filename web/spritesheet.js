@@ -1,4 +1,6 @@
 import {els, model} from "../globals.js";
+import { get_selected_spritelet } from "./spritelets.js";
+import { onDrag } from "./utils.js";
 
 const spritesheet_ctx = els.spritesheet.getContext("2d", { alpha: true });
 const minimap_ctx = els.minimap.getContext("2d", { alpha: true });
@@ -117,24 +119,24 @@ els.spritesheet_zoom.addEventListener("input", (e) => {
     prev_zoom = new_zoom;
     draw_spritesheet();
     draw_minimap();
+    update_selector_box();
 });
 
 els.spritesheet_pan_x.addEventListener("input", (e) => {
     clamp_pan();
     draw_spritesheet();
     draw_minimap();
+    update_selector_box();
 });
 
 els.spritesheet_pan_y.addEventListener("input", (e) => {
     clamp_pan();
     draw_spritesheet();
     draw_minimap();
+    update_selector_box();
 });
 
-els.minimap.addEventListener("pointermove", (e) => {
-    if (!(e.buttons & 1)) {
-        return;
-    }
+onDrag(els.minimap, (e) => {
     const rect = els.minimap.getBoundingClientRect();
     const offset = 64 / els.spritesheet_zoom.valueAsNumber;
     els.spritesheet_pan_x.valueAsNumber = 128 * (e.clientX - rect.left) / rect.width - offset;
@@ -142,12 +144,43 @@ els.minimap.addEventListener("pointermove", (e) => {
     clamp_pan();
     draw_spritesheet();
     draw_minimap();
+    update_selector_box();
 });
 
 // Layout behaviour that flex can't acheive.
 new ResizeObserver(entries => {
     const { height } = entries[0].contentRect;
     els.spritesheet.style.width = height + "px";
-}).observe(els.spritesheet)
+}).observe(els.spritesheet);
+
+export function update_selector_box() {
+    const spritelet = get_selected_spritelet();
+    const zoom = els.spritesheet_zoom.valueAsNumber;
+    var pan_x = els.spritesheet_pan_x.valueAsNumber;
+    var pan_y = els.spritesheet_pan_y.valueAsNumber;
+    const rel_l = (spritelet.region.x - pan_x) * zoom / 128;
+    const rel_t = (spritelet.region.y - pan_y) * zoom / 128;
+    const rel_r = (spritelet.region.x + spritelet.region.w - pan_x) * zoom / 128;
+    const rel_b = (spritelet.region.y + spritelet.region.h - pan_y) * zoom / 128;
+    const canvas_rect = els.spritesheet.getBoundingClientRect();
+    const pix_l = rel_l * canvas_rect.width;
+    const pix_t = rel_t * canvas_rect.height;
+    const pix_r = rel_r * canvas_rect.width;
+    const pix_b = rel_b * canvas_rect.height;
+    console.log(pix_l, pix_t, pix_r, pix_b)
+
+    els.selector_box.style.left = pix_l + "px";
+    els.selector_box.style.top = pix_t + "px";
+    els.selector_box.style.width = pix_r - pix_l + "px";
+    els.selector_box.style.height = pix_b - pix_t + "px";
+    els.selector_anchor_tl.style.left = pix_l + "px";
+    els.selector_anchor_tl.style.top = pix_t + "px";
+    els.selector_anchor_tr.style.left = pix_r + "px";
+    els.selector_anchor_tr.style.top = pix_t + "px";
+    els.selector_anchor_bl.style.left = pix_l + "px";
+    els.selector_anchor_bl.style.top = pix_b + "px";
+    els.selector_anchor_br.style.left = pix_r + "px";
+    els.selector_anchor_br.style.top = pix_b + "px";
+}
 
 update_image();

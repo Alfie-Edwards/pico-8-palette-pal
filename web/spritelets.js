@@ -1,4 +1,6 @@
 import {els, model, Region} from "../globals.js";
+import { update_selector_box } from "./spritesheet.js";
+import { onDrag } from "./utils.js";
 
 var selected_spritelet_id = null;
 
@@ -6,17 +8,27 @@ const selected_spritelet_ctx = els.selected_spritelet.getContext("2d", { alpha: 
 
 els.add_spritelet.addEventListener("click", (e) => {
     const z = 128 / els.spritesheet_zoom.valueAsNumber;
-    const x = Math.round(els.spritesheet_pan_x.valueAsNumber + 0.125 * z);
-    const y = Math.round(els.spritesheet_pan_y.valueAsNumber + 0.125 * z);
-    const wh = Math.round(z * 0.75)
+    const x = Math.round(els.spritesheet_pan_x.valueAsNumber + 0.25 * z);
+    const y = Math.round(els.spritesheet_pan_y.valueAsNumber + 0.25 * z);
+    const wh = Math.round(z * 0.5)
     set_selected_spritelet_id(model.new_spritelet(new Region(x, y, wh, wh)));
 });
 
-function get_selected_spritelet() {
+export function get_selected_spritelet() {
     if (selected_spritelet_id == null) {
         return null;
     }
     return model.get_spritelet(selected_spritelet_id);
+}
+
+function get_sheet_coords(x, y) {
+    const rect = els.spritesheet.getBoundingClientRect();
+    var pan_x = els.spritesheet_pan_x.valueAsNumber;
+    var pan_y = els.spritesheet_pan_y.valueAsNumber;
+    const zoom = els.spritesheet_zoom.valueAsNumber;
+    const view_x = (x - rect.x) / rect.width;
+    const view_y = (y - rect.y) / rect.height;
+    return [pan_x + view_x * (128 / zoom), pan_y + view_y * (128 / zoom)];
 }
 
 els.selected_spritelet_x.addEventListener("input", (e) => {
@@ -104,15 +116,28 @@ function set_selected_spritelet_id(value) {
     if (get_selected_spritelet() == null) {
         els.selected_spritelet_toolbar.hidden = true;
         els.edit_spritelet_divider.hidden = true;
+        els.selector_box.hidden = true;
+        els.selector_anchor_tl.hidden = true;
+        els.selector_anchor_tr.hidden = true;
+        els.selector_anchor_bl.hidden = true;
+        els.selector_anchor_br.hidden = true;
     } else {
         refresh_selected_spritelet();
         els.selected_spritelet_toolbar.hidden = false;
         els.edit_spritelet_divider.hidden = false;
+        els.selector_box.hidden = false;
+        els.selector_anchor_tl.hidden = false;
+        els.selector_anchor_tr.hidden = false;
+        els.selector_anchor_bl.hidden = false;
+        els.selector_anchor_br.hidden = false;
     }
 }
 
 function refresh_selected_spritelet() {
     var spritelet = get_selected_spritelet();
+    if (spritelet == null) {
+        return;
+    }
     els.selected_spritelet_x.value = spritelet.region.x;
     els.selected_spritelet_y.value = spritelet.region.y;
     els.selected_spritelet_width.value = spritelet.region.w;
@@ -124,6 +149,7 @@ function refresh_selected_spritelet() {
     const img = new ImageData(new Uint8ClampedArray(bytes), spritelet.region.w, spritelet.region.h);
     selected_spritelet_ctx.putImageData(img, 0, 0);
 
+    update_selector_box();
     refresh_spritelet_list();
 }
 
@@ -173,4 +199,84 @@ els.delete_spritelet.addEventListener("click", (e) => {
         refresh_spritelet_list();
         set_selected_spritelet_id(new_id);
     }
+});
+
+onDrag(els.selector_anchor_tl, (e) => {
+    var spritelet = get_selected_spritelet();
+    if (spritelet == null) {
+        return;
+    }
+    const r = spritelet.region.x + spritelet.region.w;
+    const b = spritelet.region.y + spritelet.region.h;
+    var [sheet_x, sheet_y] = get_sheet_coords(e.clientX, e.clientY);
+    sheet_x = Math.max(0, Math.min(r + 1, sheet_x));
+    sheet_y = Math.max(0, Math.min(b + 1, sheet_y));
+    const dx = sheet_x - spritelet.region.x;
+    const dy = sheet_y - spritelet.region.y;
+
+    spritelet.region = new Region(
+        Math.round(sheet_x),
+        Math.round(sheet_y),
+        Math.round(spritelet.region.w - dx),
+        Math.round(spritelet.region.h - dy));
+    model.update_spritelet(selected_spritelet_id, spritelet);
+    refresh_selected_spritelet();
+});
+
+onDrag(els.selector_anchor_tr, (e) => {
+    var spritelet = get_selected_spritelet();
+    if (spritelet == null) {
+        return;
+    }
+    const b = spritelet.region.y + spritelet.region.h;
+    var [sheet_x, sheet_y] = get_sheet_coords(e.clientX, e.clientY);
+    sheet_x = Math.max(spritelet.region.x + 1, Math.min(128, sheet_x));
+    sheet_y = Math.max(0, Math.min(b + 1, sheet_y));
+    const dy = sheet_y - spritelet.region.y;
+
+    spritelet.region = new Region(
+        spritelet.region.x,
+        Math.round(sheet_y),
+        Math.round(sheet_x - spritelet.region.x),
+        Math.round(spritelet.region.h - dy));
+    model.update_spritelet(selected_spritelet_id, spritelet);
+    refresh_selected_spritelet();
+});
+
+onDrag(els.selector_anchor_bl, (e) => {
+    var spritelet = get_selected_spritelet();
+    if (spritelet == null) {
+        return;
+    }
+    const r = spritelet.region.x + spritelet.region.w;
+    var [sheet_x, sheet_y] = get_sheet_coords(e.clientX, e.clientY);
+    sheet_x = Math.max(0, Math.min(r + 1, sheet_x));
+    sheet_y = Math.max(spritelet.region.y + 1, Math.min(128, sheet_y));
+    const dx = sheet_x - spritelet.region.x;
+
+    spritelet.region = new Region(
+        Math.round(sheet_x),
+        spritelet.region.y,
+        Math.round(spritelet.region.w - dx),
+        Math.round(sheet_y - spritelet.region.y));
+    model.update_spritelet(selected_spritelet_id, spritelet);
+    refresh_selected_spritelet();
+});
+
+onDrag(els.selector_anchor_br, (e) => {
+    var spritelet = get_selected_spritelet();
+    if (spritelet == null) {
+        return;
+    }
+    var [sheet_x, sheet_y] = get_sheet_coords(e.clientX, e.clientY);
+    sheet_x = Math.max(spritelet.region.x + 1, Math.min(128, sheet_x));
+    sheet_y = Math.max(spritelet.region.y + 1, Math.min(128, sheet_y));
+
+    spritelet.region = new Region(
+        spritelet.region.x,
+        spritelet.region.y,
+        Math.round(sheet_x - spritelet.region.x),
+        Math.round(sheet_y - spritelet.region.y));
+    model.update_spritelet(selected_spritelet_id, spritelet);
+    refresh_selected_spritelet();
 });

@@ -22,5 +22,10 @@ export const els = Object.fromEntries(
         "spritelet-list",
         "edit-spritelet-divider",
         "delete-spritelet",
+        "selector-box",
+        "selector-anchor-tl",
+        "selector-anchor-tr",
+        "selector-anchor-bl",
+        "selector-anchor-br",
     ].map( id => [id.replaceAll("-", "_"), document.getElementById(id)])
 )
