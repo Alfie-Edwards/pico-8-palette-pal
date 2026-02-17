@@ -30,8 +30,8 @@ export class ZoomPanImage {
         this.minimap_canvas = minimap_canvas;
         this.zoom = 1;
         this.pan = {x: 0, y: 0}
-        this.main_ctx = main_canvas.getContext("2d", { alpha: true });
-        this.minimap_ctx = minimap_canvas.getContext("2d", { alpha: true });
+        this.main_ctx = this.main_canvas.getContext("2d", { alpha: true });
+        this.minimap_ctx = this.minimap_canvas.getContext("2d", { alpha: true });
 
         onDrag(this.minimap_canvas, (e) => {
             const rect = this.minimap_canvas.getBoundingClientRect();

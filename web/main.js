@@ -1,4 +1,3 @@
 import "./globals.js"
-import "./spritesheet.js"
-import "./spritelets.js"
+import "./sheet.js"
 import "./sprites.js"

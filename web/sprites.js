@@ -2,7 +2,7 @@ import {els, model} from "./globals.js";
 import { DraggableRegion, ZoomPanImage } from "./utils.js";
 
 const image = new ZoomPanImage(els.selected_sprite, els.selected_sprite_minimap, null, 1, 1);
-const selection_box = new DraggableRegion(spritesheet);
+const selection_box = new DraggableRegion(image);
 
 var selected_sprite_id = null;
 
