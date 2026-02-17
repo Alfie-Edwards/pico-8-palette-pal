@@ -1,5 +1,5 @@
 import {els, model} from "./globals.js";
-import { get_selected_spritelet } from "./spritelets.js";
+import { get_selected_spritelet, refresh_selected_spritelet, refresh_spritelet_list } from "./spritelets.js";
 import { onDrag } from "./utils.js";
 
 const spritesheet_ctx = els.spritesheet.getContext("2d", { alpha: true });
@@ -100,6 +100,8 @@ els.load_spritesheet_button.addEventListener("change", async (e) => {
     console.log("hi")
     model.load_spritesheet_rgba(rgba);
     update_image();
+    refresh_selected_spritelet();
+    refresh_spritelet_list();
 });
 
 els.spritesheet_zoom.addEventListener("input", (e) => {
@@ -162,12 +164,11 @@ export function update_selector_box() {
     const rel_t = (spritelet.region.y - pan_y) * zoom / 128;
     const rel_r = (spritelet.region.x + spritelet.region.w - pan_x) * zoom / 128;
     const rel_b = (spritelet.region.y + spritelet.region.h - pan_y) * zoom / 128;
-    const canvas_rect = els.spritesheet.getBoundingClientRect();
-    const pix_l = rel_l * canvas_rect.width;
-    const pix_t = rel_t * canvas_rect.height;
-    const pix_r = rel_r * canvas_rect.width;
-    const pix_b = rel_b * canvas_rect.height;
-    console.log(pix_l, pix_t, pix_r, pix_b)
+    const spritesheet_rect = els.spritesheet.getBoundingClientRect();
+    const pix_l = rel_l * spritesheet_rect.width;
+    const pix_t = rel_t * spritesheet_rect.height;
+    const pix_r = rel_r * spritesheet_rect.width;
+    const pix_b = rel_b * spritesheet_rect.height;
 
     els.selector_box.style.left = pix_l + "px";
     els.selector_box.style.top = pix_t + "px";
@@ -182,5 +183,9 @@ export function update_selector_box() {
     els.selector_anchor_br.style.left = pix_r + "px";
     els.selector_anchor_br.style.top = pix_b + "px";
 }
+
+window.addEventListener("resize", () => {
+    update_selector_box();
+});
 
 update_image();

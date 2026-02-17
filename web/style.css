@@ -214,10 +214,11 @@ input {
 
 #spritesheet-box {
     flex-grow: 1;
-    min-height: 0;
+    min-height: 128px;
     position: relative;
     overflow: hidden;
-    text-align: center;
+    align-self: center;
+    width: fit-content;
 }
 
 #spritesheet {
@@ -308,7 +309,6 @@ input {
     position: absolute;
     min-width: 1px;
     min-height: 1px;
-    pointer-events: none;
 }
 
 #selector-anchor-tl,

@@ -133,7 +133,7 @@ function set_selected_spritelet_id(value) {
     }
 }
 
-function refresh_selected_spritelet() {
+export function refresh_selected_spritelet() {
     var spritelet = get_selected_spritelet();
     if (spritelet == null) {
         return;
@@ -153,7 +153,7 @@ function refresh_selected_spritelet() {
     refresh_spritelet_list();
 }
 
-function refresh_spritelet_list() {
+export function refresh_spritelet_list() {
     els.spritelet_list.replaceChildren();
     for (const id of model.spritelet_ids()) {
         const container = document.createElement("div");
@@ -277,6 +277,27 @@ onDrag(els.selector_anchor_br, (e) => {
         spritelet.region.y,
         Math.round(sheet_x - spritelet.region.x),
         Math.round(sheet_y - spritelet.region.y));
+    model.update_spritelet(selected_spritelet_id, spritelet);
+    refresh_selected_spritelet();
+});
+
+onDrag(els.selector_box, (e, drag_offset) => {
+    var spritelet = get_selected_spritelet();
+    if (spritelet == null) {
+        return;
+    }
+    const rect = els.spritesheet.getBoundingClientRect();
+    const z = 128 / els.spritesheet_zoom.valueAsNumber;
+    var dx = drag_offset.x * z / rect.width;
+    var dy = drag_offset.y * z / rect.height;
+    dx = Math.max(-spritelet.region.x, Math.min(128 - spritelet.region.x -spritelet.region.w, dx));
+    dy = Math.max(-spritelet.region.y, Math.min(128 - spritelet.region.y -spritelet.region.h, dy));
+
+    spritelet.region = new Region(
+        Math.round(spritelet.region.x + dx),
+        Math.round(spritelet.region.y + dy),
+        spritelet.region.w,
+        spritelet.region.h);
     model.update_spritelet(selected_spritelet_id, spritelet);
     refresh_selected_spritelet();
 });

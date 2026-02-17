@@ -16,9 +16,25 @@ impl SpriteSheet {
 
     pub fn new() -> SpriteSheet {
         let mut data = [[0; H]; W];
-        for row in 0..H {
-            for col in 0..W {
-                data[col][row] = (((row * col) % 32) as i8) - 16
+        for col in 0..W {
+            for row in 0..H {
+                // Generate a spritesheet with all the colours that looks
+                // non-repetitive.
+                let x = col / 16;
+                let y = row / 16;
+
+                let col_in = col % 16;
+                let row_in = row % 16;
+
+                let xf0 = x ^ ((y >> 2) * 7);
+                let shift = ((0x3C >> y) & 1) * 4;
+                let xf = (xf0 + shift) & 7;
+
+                let a = (xf + 8*y) & 31;
+                let b = (a + 16) & 31;
+
+                let v = if col_in + row_in < 16 { a } else { b };
+                data[col][row] = (v - 16) as i8;
             }
         }
         Self { data }

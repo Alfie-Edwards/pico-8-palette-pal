@@ -7,6 +7,7 @@ export const model = new Model();
 export const els = Object.fromEntries(
     [
         "spritesheet",
+        "spritesheet-box",
         "minimap",
         "load-spritesheet-button",
         "selected-spritelet-toolbar",
