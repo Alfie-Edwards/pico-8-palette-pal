@@ -155,6 +155,7 @@ export function refresh_selected_spritelet() {
 
 export function refresh_spritelet_list() {
     els.spritelet_list.replaceChildren();
+    els.spritelet_list_2.replaceChildren();
     for (const id of model.spritelet_ids()) {
         const container = document.createElement("div");
         container.classList.add("image-container")
@@ -165,19 +166,22 @@ export function refresh_spritelet_list() {
 
         var spritelet = model.get_spritelet(id);
         var canvas = document.createElement("canvas");
-        var ctx = canvas.getContext("2d", { alpha: true });
         canvas.width = spritelet.region.w;
         canvas.height = spritelet.region.h;
         const bytes = model.render_spritelet_rgba(id);
         var image_data = new ImageData(new Uint8ClampedArray(bytes), spritelet.region.w, spritelet.region.h);
-        ctx.putImageData(image_data, 0, 0);
+        canvas.getContext("2d", { alpha: true }).putImageData(image_data, 0, 0);
+
+        container.append(canvas);
+        els.spritelet_list.append(container);
+
+        let clone = container.cloneNode(true);
+        clone.lastChild.getContext("2d", {alpha :true}).putImageData(image_data, 0, 0);
+        els.spritelet_list_2.append(clone);
 
         if (id == selected_spritelet_id) {
             container.style.borderWidth = "3px"
         }
-
-        container.append(canvas);
-        els.spritelet_list.append(container);
     }
 }
 

@@ -226,6 +226,10 @@ input {
     height: 100%;
 }
 
+#selected-spritelet {
+    object-position: right;
+}
+
 .button {
   font-size: 14px;
   background: var(--col-neg-11);
@@ -259,6 +263,8 @@ input {
     flex-wrap: wrap;
     gap: 16px;
     flex-grow: 1;
+    align-content: flex-start;
+    min-width: 416px; /* 3 items wide: 128 * 3 + 16 * 2 */
 }
 
 .item-display > .image-container {

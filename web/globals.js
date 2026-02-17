@@ -21,6 +21,7 @@ export const els = Object.fromEntries(
         "spritesheet-pan-x",
         "spritesheet-pan-y",
         "spritelet-list",
+        "spritelet-list-2",
         "edit-spritelet-divider",
         "delete-spritelet",
         "selector-box",
