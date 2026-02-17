@@ -1,6 +1,6 @@
 import {els, model, Region} from "./globals.js";
-import { update_selector_box } from "./spritesheet.js";
-import { onDrag } from "./utils.js";
+import { selection_box } from "./spritesheet.js";
+
 
 var selected_spritelet_id = null;
 
@@ -19,16 +19,6 @@ export function get_selected_spritelet() {
         return null;
     }
     return model.get_spritelet(selected_spritelet_id);
-}
-
-function get_sheet_coords(x, y) {
-    const rect = els.spritesheet.getBoundingClientRect();
-    var pan_x = els.spritesheet_pan_x.valueAsNumber;
-    var pan_y = els.spritesheet_pan_y.valueAsNumber;
-    const zoom = els.spritesheet_zoom.valueAsNumber;
-    const view_x = (x - rect.x) / rect.width;
-    const view_y = (y - rect.y) / rect.height;
-    return [pan_x + view_x * (128 / zoom), pan_y + view_y * (128 / zoom)];
 }
 
 els.selected_spritelet_x.addEventListener("input", (e) => {
@@ -116,20 +106,11 @@ function set_selected_spritelet_id(value) {
     if (get_selected_spritelet() == null) {
         els.selected_spritelet_toolbar.hidden = true;
         els.edit_spritelet_divider.hidden = true;
-        els.selector_box.hidden = true;
-        els.selector_anchor_tl.hidden = true;
-        els.selector_anchor_tr.hidden = true;
-        els.selector_anchor_bl.hidden = true;
-        els.selector_anchor_br.hidden = true;
+        selection_box.set_region(null);
     } else {
         refresh_selected_spritelet();
         els.selected_spritelet_toolbar.hidden = false;
         els.edit_spritelet_divider.hidden = false;
-        els.selector_box.hidden = false;
-        els.selector_anchor_tl.hidden = false;
-        els.selector_anchor_tr.hidden = false;
-        els.selector_anchor_bl.hidden = false;
-        els.selector_anchor_br.hidden = false;
     }
 }
 
@@ -149,7 +130,7 @@ export function refresh_selected_spritelet() {
     const img = new ImageData(new Uint8ClampedArray(bytes), spritelet.region.w, spritelet.region.h);
     selected_spritelet_ctx.putImageData(img, 0, 0);
 
-    update_selector_box();
+    selection_box.set_region(spritelet.region);
     refresh_spritelet_list();
 }
 
@@ -189,7 +170,7 @@ els.delete_spritelet.addEventListener("click", (e) => {
     if (selected_spritelet_id != null) {
         var ids = model.spritelet_ids();
         var new_id = null;
-        for (var i in ids) {
+        for (var i of ids) {
             if (ids[i] == selected_spritelet_id) {
                 if (i > 0) {
                     new_id = ids[i - 1];
@@ -205,103 +186,17 @@ els.delete_spritelet.addEventListener("click", (e) => {
     }
 });
 
-onDrag(els.selector_anchor_tl, (e) => {
-    var spritelet = get_selected_spritelet();
-    if (spritelet == null) {
-        return;
+els.spritesheet.addEventListener('region_changed', (e) => {
+    if (e.detail.region != null) {
+        var selected_spritelet = get_selected_spritelet();
+        if (selected_spritelet != null) {
+            selected_spritelet.region = new Region(
+                e.detail.region.x,
+                e.detail.region.y,
+                e.detail.region.w,
+                e.detail.region.h);
+            model.update_spritelet(selected_spritelet_id, selected_spritelet);
+            refresh_selected_spritelet();
+        }
     }
-    const r = spritelet.region.x + spritelet.region.w;
-    const b = spritelet.region.y + spritelet.region.h;
-    var [sheet_x, sheet_y] = get_sheet_coords(e.clientX, e.clientY);
-    sheet_x = Math.max(0, Math.min(r - 1, sheet_x));
-    sheet_y = Math.max(0, Math.min(b - 1, sheet_y));
-    const dx = sheet_x - spritelet.region.x;
-    const dy = sheet_y - spritelet.region.y;
-
-    spritelet.region = new Region(
-        Math.round(sheet_x),
-        Math.round(sheet_y),
-        Math.round(spritelet.region.w - dx),
-        Math.round(spritelet.region.h - dy));
-    model.update_spritelet(selected_spritelet_id, spritelet);
-    refresh_selected_spritelet();
-});
-
-onDrag(els.selector_anchor_tr, (e) => {
-    var spritelet = get_selected_spritelet();
-    if (spritelet == null) {
-        return;
-    }
-    const b = spritelet.region.y + spritelet.region.h;
-    var [sheet_x, sheet_y] = get_sheet_coords(e.clientX, e.clientY);
-    sheet_x = Math.max(spritelet.region.x + 1, Math.min(128, sheet_x));
-    sheet_y = Math.max(0, Math.min(b - 1, sheet_y));
-    const dy = sheet_y - spritelet.region.y;
-
-    spritelet.region = new Region(
-        spritelet.region.x,
-        Math.round(sheet_y),
-        Math.round(sheet_x - spritelet.region.x),
-        Math.round(spritelet.region.h - dy));
-    model.update_spritelet(selected_spritelet_id, spritelet);
-    refresh_selected_spritelet();
-});
-
-onDrag(els.selector_anchor_bl, (e) => {
-    var spritelet = get_selected_spritelet();
-    if (spritelet == null) {
-        return;
-    }
-    const r = spritelet.region.x + spritelet.region.w;
-    var [sheet_x, sheet_y] = get_sheet_coords(e.clientX, e.clientY);
-    sheet_x = Math.max(0, Math.min(r - 1, sheet_x));
-    sheet_y = Math.max(spritelet.region.y + 1, Math.min(128, sheet_y));
-    const dx = sheet_x - spritelet.region.x;
-
-    spritelet.region = new Region(
-        Math.round(sheet_x),
-        spritelet.region.y,
-        Math.round(spritelet.region.w - dx),
-        Math.round(sheet_y - spritelet.region.y));
-    model.update_spritelet(selected_spritelet_id, spritelet);
-    refresh_selected_spritelet();
-});
-
-onDrag(els.selector_anchor_br, (e) => {
-    var spritelet = get_selected_spritelet();
-    if (spritelet == null) {
-        return;
-    }
-    var [sheet_x, sheet_y] = get_sheet_coords(e.clientX, e.clientY);
-    sheet_x = Math.max(spritelet.region.x + 1, Math.min(128, sheet_x));
-    sheet_y = Math.max(spritelet.region.y + 1, Math.min(128, sheet_y));
-
-    spritelet.region = new Region(
-        spritelet.region.x,
-        spritelet.region.y,
-        Math.round(sheet_x - spritelet.region.x),
-        Math.round(sheet_y - spritelet.region.y));
-    model.update_spritelet(selected_spritelet_id, spritelet);
-    refresh_selected_spritelet();
-});
-
-onDrag(els.selector_box, (e, drag_offset) => {
-    var spritelet = get_selected_spritelet();
-    if (spritelet == null) {
-        return;
-    }
-    const rect = els.spritesheet.getBoundingClientRect();
-    const z = 128 / els.spritesheet_zoom.valueAsNumber;
-    var dx = drag_offset.x * z / rect.width;
-    var dy = drag_offset.y * z / rect.height;
-    dx = Math.max(-spritelet.region.x, Math.min(128 - spritelet.region.x -spritelet.region.w, dx));
-    dy = Math.max(-spritelet.region.y, Math.min(128 - spritelet.region.y -spritelet.region.h, dy));
-
-    spritelet.region = new Region(
-        Math.round(spritelet.region.x + dx),
-        Math.round(spritelet.region.y + dy),
-        spritelet.region.w,
-        spritelet.region.h);
-    model.update_spritelet(selected_spritelet_id, spritelet);
-    refresh_selected_spritelet();
 });

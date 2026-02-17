@@ -309,7 +309,7 @@ input {
     background-color: #00E436;
 }
 
-#selector-box {
+.selector-box {
     background-color: transparent; box-shadow:
     0 0 0 1px white,
     0 0 0 2px black;
@@ -318,10 +318,7 @@ input {
     min-height: 1px;
 }
 
-#selector-anchor-tl,
-#selector-anchor-tr,
-#selector-anchor-bl,
-#selector-anchor-br {
+.selector-anchor {
     background-color: white;
     border: 1px solid black;
     position: absolute;
