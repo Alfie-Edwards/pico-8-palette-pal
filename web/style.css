@@ -251,12 +251,6 @@ input {
     height: 128px
 }
 
-.button-stack {
-    display: flex;
-    flex-direction: column;
-    gap: 16px;
-}
-
 .item-display {
     display: flex;
     overflow-y: scroll;
@@ -304,9 +298,14 @@ input {
     margin: 0px -16px;
 }
 
-#minimap {
+.vline {
+    height: calc(100% + 32px);
+    border-left: 6px dashed var(--col-neg-16);
+    margin: -16px 0px;
+}
+
+.minimap {
     aspect-ratio: 1;
-    background-color: #00E436;
 }
 
 .selector-box {
@@ -326,4 +325,18 @@ input {
     height: 13px;
     margin-left: -6px;
     margin-top: -6px;
+}
+
+.h-box {
+    display: flex;
+    flex-direction: row;
+    gap: 16px;
+    height: 100%;
+}
+
+.v-box {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+    width: 100%;
 }

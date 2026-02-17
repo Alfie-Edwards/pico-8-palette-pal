@@ -91,7 +91,12 @@ export class ZoomPanImage {
         this.main_canvas.height = height
         this.minimap_canvas.width = width
         this.minimap_canvas.height = height
-        this.#redraw();
+        if (this.image_data != null) {
+            this.main_canvas.hidden = false;
+            this.#redraw();
+        } else {
+            this.main_canvas.hidden = true;
+        }
     }
 
     client_to_image(x, y) {

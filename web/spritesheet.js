@@ -2,7 +2,7 @@ import {els, model} from "./globals.js";
 import { refresh_selected_spritelet, refresh_spritelet_list } from "./spritelets.js";
 import { DraggableRegion, ZoomPanImage } from "./utils.js";
 
-export const spritesheet = new ZoomPanImage(els.spritesheet, els.minimap, get_image_data(), 128, 128);
+export const spritesheet = new ZoomPanImage(els.spritesheet, els.spritesheet_minimap, get_image_data(), 128, 128);
 export const selection_box = new DraggableRegion(spritesheet);
 
 function get_image_data() {

@@ -1,7 +1,6 @@
 import {els, model, Region} from "./globals.js";
 import { selection_box } from "./spritesheet.js";
 
-
 var selected_spritelet_id = null;
 
 const selected_spritelet_ctx = els.selected_spritelet.getContext("2d", { alpha: true });

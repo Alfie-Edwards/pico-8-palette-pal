@@ -8,7 +8,7 @@ export const els = Object.fromEntries(
     [
         "spritesheet",
         "spritesheet-box",
-        "minimap",
+        "spritesheet-minimap",
         "load-spritesheet-button",
         "selected-spritelet-toolbar",
         "selected-spritelet",
@@ -24,10 +24,6 @@ export const els = Object.fromEntries(
         "spritelet-list-2",
         "edit-spritelet-divider",
         "delete-spritelet",
-        "selector-box",
-        "selector-anchor-tl",
-        "selector-anchor-tr",
-        "selector-anchor-bl",
-        "selector-anchor-br",
+        "selected-sprite",
     ].map( id => [id.replaceAll("-", "_"), document.getElementById(id)])
 )
