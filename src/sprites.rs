@@ -63,7 +63,11 @@ impl SpriteSheet {
         Self { data: data }
     }
 
-    pub fn render_rgba(self, x: usize, y: usize, mut w: usize, mut h: usize, color_map: ColorMap) -> ImageBuffer {
+    pub fn render_rgba(self, region: Region, color_map: ColorMap) -> ImageBuffer {
+        let x = region.x as usize;
+        let y = region.y as usize;
+        let mut w = region.w as usize;
+        let mut h = region.h as usize;
         if w == 0 || h == 0 || x >= W || y >= H {
             return ImageBuffer::empty();
         }
@@ -141,7 +145,7 @@ impl Sprite {
         }
     }
 
-    pub fn num_components(&mut self) -> usize {
+    pub fn num_components(&self) -> usize {
         self.components.len()
     }
 

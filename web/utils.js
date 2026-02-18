@@ -62,6 +62,7 @@ export class ZoomPanImage {
                 }
             })
         );
+        this.#redraw();
     }
 
     set_zoom(zoom) {
@@ -81,6 +82,7 @@ export class ZoomPanImage {
         var pan_x_shift = (this.width / 2) * (this.zoom - prev_zoom) / (prev_zoom * this.zoom);
         var pan_y_shift = (this.height / 2) * (this.zoom - prev_zoom) / (prev_zoom * this.zoom);
         this.set_pan(this.pan.x + pan_x_shift, this.pan.y + pan_y_shift);
+        this.#redraw();
     }
 
     set_image_data(image_data, width, height) {
@@ -110,6 +112,7 @@ export class ZoomPanImage {
     }
 
     #redraw() {
+        console.log("REDRAW")
         const width = this.width / this.zoom;
         const height = this.height / this.zoom;
         this.main_ctx.putImageData(this.image_data, 0, 0);

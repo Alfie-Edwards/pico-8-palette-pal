@@ -107,7 +107,7 @@ impl ColorMap {
 
     pub fn then(&self, rhs: ColorMap) -> ColorMap {
         let mut out = ColorMap::all_transparent();
-        for col in -16i8..15 {
+        for col in -16i8..16 {
             match self.get(col) {
                 Some(x) => out.set(col, rhs.get(x)),
                 None => out.set(col, None),

@@ -46,64 +46,16 @@ function refresh_sprite_list() {
 
         var sprite = model.get_sprite(id);
         var canvas = document.createElement("canvas");
-        canvas.width = sprite_width(id);
-        canvas.height = sprite_height(id);
-        // const buffer = model.render_sprite_rgba(id);
-        // var image_data = new ImageData(new Uint8ClampedArray(buffer.data), buffer.width, buffer.height);
-        // canvas.getContext("2d", { alpha: true }).putImageData(image_data, 0, 0);
+        const buffer = model.render_sprite_rgba(id);
+        canvas.width = buffer.width;
+        canvas.height = buffer.height;
+        var image_data = new ImageData(new Uint8ClampedArray(buffer.data), buffer.width, buffer.height);
+        canvas.getContext("2d", { alpha: true }).putImageData(image_data, 0, 0);
 
         container.append(canvas);
         els.sprite_list.append(container);
     }
     els.sprite_list.append(els.add_sprite);
-}
-
-function sprite_width(id) {
-    if (id == null) {
-        return 0;
-    }
-    const sprite = model.get_sprite(id);
-    if (sprite == null) {
-        return 0;
-    }
-    let l = 0;
-    let r = 0;
-    for (let i = 0; i < sprite.num_components(); i++) {
-        const component = sprite.get_component(i);
-        l = Math.min(l, component.pos.x);
-
-        const spritelet = model.get_spritelet(component.spritelet_id);
-        if (spritelet == null) {
-            r = Math.min(l, component.pos.x);
-        } else {
-            r = Math.min(l + spritelet.region.w, component.pos.x);
-        }
-    }
-    return r - l;
-}
-
-function sprite_height(id) {
-    if (id == null) {
-        return 0;
-    }
-    const sprite = model.get_sprite(id);
-    if (sprite == null) {
-        return 0;
-    }
-    let t = 0;
-    let b = 0;
-    for (let i = 0; i < sprite.num_components(); i++) {
-        const component = sprite.get_component(i);
-        t = Math.min(t, component.pos.y);
-
-        const spritelet = model.get_spritelet(component.spritelet_id);
-        if (spritelet == null) {
-            b = Math.min(t, component.pos.y);
-        } else {
-            b = Math.min(t + spritelet.region.h, component.pos.y);
-        }
-    }
-    return b - t;
 }
 
 els.add_sprite.addEventListener("click", (e) => {

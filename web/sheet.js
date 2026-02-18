@@ -42,8 +42,9 @@ els.load_spritesheet_button.addEventListener("change", async (e) => {
     if (rgba.length != (128 * 128 * 4)) {
         return;
     }
+    console.log(rgba)
     model.load_spritesheet_rgba(rgba);
-    spritesheet.set_image_data(get_image_data());
+    spritesheet.set_image_data(get_image_data(), 128, 128);
     refresh_selected_spritelet();
     refresh_spritelet_list();
 });
@@ -60,7 +61,7 @@ els.spritesheet_pan_x.addEventListener("input", (e) => {
 });
 
 els.spritesheet_pan_y.addEventListener("input", (e) => {
-    spritesheet.set_pan(els.spritesheet_pan_y.valueAsNumber, spritesheet.pan.y);
+    spritesheet.set_pan(spritesheet.pan.x, els.spritesheet_pan_y.valueAsNumber);
     els.spritesheet_pan_y.valueAsNumber = spritesheet.pan.y;
 });
 
@@ -258,6 +259,15 @@ els.spritesheet.addEventListener('region_changed', (e) => {
             refresh_selected_spritelet();
         }
     }
+});
+
+els.spritesheet.addEventListener("zoom_changed", (e) => {
+    els.spritesheet_zoom.valueAsNumber = spritesheet.zoom;
+});
+
+els.spritesheet.addEventListener("pan_changed", (e) => {
+    els.spritesheet_pan_x.valueAsNumber = spritesheet.pan.x;
+    els.spritesheet_pan_y.valueAsNumber = spritesheet.pan.y;
 });
 
 // Layout behaviour that flex can't acheive.

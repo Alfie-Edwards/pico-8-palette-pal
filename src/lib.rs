@@ -4,14 +4,14 @@ mod ids;
 mod primitives;
 mod sprites;
 
-use std::collections::HashMap;
+use std::{cmp::{max, min}, collections::HashMap, i32};
 
 use colors::ColorMap;
 use sprites::{Spritelet, Sprite, Scene};
 use wasm_bindgen::prelude::wasm_bindgen;
 use ids::new_id;
 
-use crate::{ids::Id, primitives::{ImageBuffer, Region}, sprites::{H, SpriteSheet, W}};
+use crate::{ids::Id, primitives::{ImageBuffer, Pos, Region}, sprites::{H, SpriteSheet, W}};
 
 #[wasm_bindgen]
 pub struct Model {
@@ -41,35 +41,77 @@ impl Model {
     }
 
     pub fn render_spritesheet_rgba(&self) -> ImageBuffer {
-        self.sprite_sheet.render_rgba(0, 0, W, H, ColorMap::identity())
+        self.sprite_sheet.render_rgba(Region::new(0, 0, W as u8, H as u8), ColorMap::identity())
     }
 
     pub fn render_spritelet_rgba(&self, id: Id) -> ImageBuffer {
+        self.render_spritelet_color_mapped_rgba(id, ColorMap::identity())
+    }
+
+    pub fn render_spritelet_color_mapped_rgba(&self, id: Id, color_map: ColorMap) -> ImageBuffer {
         if !self.spritelets.contains_key(&id) {
             return ImageBuffer::empty();
         }
         return self.sprite_sheet.render_rgba(
-            self.spritelets[&id].region.x() as usize,
-            self.spritelets[&id].region.y() as usize,
-            self.spritelets[&id].region.w() as usize,
-            self.spritelets[&id].region.h() as usize,
-            self.spritelets[&id].color_map
+            self.spritelets[&id].region,
+            self.spritelets[&id].color_map * color_map,
         );
+    }
+
+    pub fn render_sprite_color_mapped_rgba(&self, id: Id, color_map: ColorMap) -> ImageBuffer {
+        match self.get_sprite(id) {
+            None => {
+                return ImageBuffer::empty();
+            },
+            Some(sprite) => {
+                let mut l = i32::MAX;
+                let mut t = i32::MAX;
+                let mut r = i32::MIN;
+                let mut b = i32::MIN;
+
+                for i in 0..sprite.num_components() {
+                    match self.sprites[&id].get_component(i) {
+                        Some(component) => {
+                            l = min(l, component.pos.x as i32);
+                            t = min(t, component.pos.y as i32);
+
+                            match self.get_spritelet(component.spritelet_id) {
+                                Some(spritelet) => {
+                                    r = max(r, component.pos.x as i32 + spritelet.region.w as i32);
+                                    b = max(b, component.pos.y as i32 + spritelet.region.h as i32);
+                                },
+                                None => {
+                                    r = max(r, component.pos.x as i32);
+                                    b = max(b, component.pos.y as i32);
+                                },
+                            }
+                        },
+                        None => { },
+                    }
+                }
+
+                let width = (r - l) as usize;
+                let height = (b - t) as usize;
+                let mut result_image = ImageBuffer::full(0, 0, 0, 0, width, height);
+                for i in 0..sprite.num_components() {
+                    match self.sprites[&id].get_component(i) {
+                        Some(component) => {
+                            let spritelet_image = self.render_spritelet_color_mapped_rgba(component.spritelet_id, color_map);
+                            let relative_pos = Pos::new(component.pos.x - l as i8, component.pos.y - t as i8);
+                            result_image.write(&spritelet_image, relative_pos);
+                        },
+                        None => { },
+                    }
+                }
+
+                return result_image;
+            }
+        }
     }
 
     pub fn render_sprite_rgba(&self, id: Id) -> ImageBuffer {
-        if !self.sprites.contains_key(&id) {
-            return ImageBuffer::empty();
-        }
-        return self.sprite_sheet.render_rgba(
-            self.spritelets[&id].region.x() as usize,
-            self.spritelets[&id].region.y() as usize,
-            self.spritelets[&id].region.w() as usize,
-            self.spritelets[&id].region.h() as usize,
-            self.spritelets[&id].color_map
-        );
+        self.render_sprite_color_mapped_rgba(id, ColorMap::identity())
     }
-
 
     // SPRITELETS
 
@@ -88,7 +130,7 @@ impl Model {
         return id;
     }
 
-    pub fn get_spritelet(&mut self, id: Id) -> Option<Spritelet> {
+    pub fn get_spritelet(&self, id: Id) -> Option<Spritelet> {
         if self.spritelets.contains_key(&id) {
             Some(self.spritelets[&id].clone())
         } else {
@@ -124,7 +166,7 @@ impl Model {
         return id;
     }
 
-    pub fn get_sprite(&mut self, id: Id) -> Option<Sprite> {
+    pub fn get_sprite(&self, id: Id) -> Option<Sprite> {
         if self.sprites.contains_key(&id) {
             Some(self.sprites[&id].clone())
         } else {
@@ -159,7 +201,7 @@ impl Model {
         return id;
     }
 
-    pub fn get_scene(&mut self, id: Id) -> Option<Scene> {
+    pub fn get_scene(&self, id: Id) -> Option<Scene> {
         if self.scenes.contains_key(&id) {
             Some(self.scenes[&id].clone())
         } else {
