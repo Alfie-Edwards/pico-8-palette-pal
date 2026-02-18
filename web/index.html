@@ -23,7 +23,9 @@
   <div class="ui-panel pixel-corners-2" id="left-panel">
 
     <section class="tab-pane" data-tab="sheet">
-      <div id="spritelet-list" class="item-display"></div>
+      <div id="spritelet-list" class="item-display">
+        <button id="add-spritelet" class="button pixel-corners-1">new spritelet</button>
+      </div>
       <div id="edit-spritelet-divider" class="hline"></div>
       <div id="selected-spritelet-toolbar" class="toolbar" hidden>
         <div class="image-container">
@@ -49,8 +51,11 @@
     </section>
 
     <section class="tab-pane" data-tab="sprites">
-      <div class="h-box">
-        <div class="v-box">
+      <div id="sprite-list" class="item-display">
+        <button id="add-sprite" class="button pixel-corners-1">new sprite</button>
+      </div>
+      <div id="edit-sprite" class="h-box">
+        <div class="v-box" hidden>
           <div id="selected-sprite-box">
             <canvas id="selected-sprite"></canvas>
           </div>
@@ -66,7 +71,7 @@
               <input id="spritesheet-pan-y" value="0" type="number" min="0" max="128">
             </form>
             <div class="v-box">
-              <button id="add-sprite" class="button pixel-corners-1">new sprite</button>
+              <button class="button pixel-corners-1">delete sprite</button>
             </div>
           </div>
         </div>
@@ -103,7 +108,6 @@
         <div class="v-box">
           <input type="file" id="load-spritesheet-button" accept="image/png" hidden/>
           <label for="load-spritesheet-button" class="button pixel-corners-1">load image</label>
-          <button id="add-spritelet" class="button pixel-corners-1">new spritelet</button>
         </div>
       </div>
     </section>

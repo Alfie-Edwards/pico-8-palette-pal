@@ -11,7 +11,7 @@ use sprites::{Spritelet, Sprite, Scene};
 use wasm_bindgen::prelude::wasm_bindgen;
 use ids::new_id;
 
-use crate::{ids::Id, primitives::Region, sprites::{H, SpriteSheet, W}};
+use crate::{ids::Id, primitives::{ImageBuffer, Region}, sprites::{H, SpriteSheet, W}};
 
 #[wasm_bindgen]
 pub struct Model {
@@ -40,13 +40,26 @@ impl Model {
         self.sprite_sheet = SpriteSheet::from_rgba(rgba);
     }
 
-    pub fn render_spritesheet_rgba(&self) -> Vec<u8> {
+    pub fn render_spritesheet_rgba(&self) -> ImageBuffer {
         self.sprite_sheet.render_rgba(0, 0, W, H, ColorMap::identity())
     }
 
-    pub fn render_spritelet_rgba(&self, id: Id) -> Vec<u8> {
+    pub fn render_spritelet_rgba(&self, id: Id) -> ImageBuffer {
         if !self.spritelets.contains_key(&id) {
-            return Vec::new();
+            return ImageBuffer::empty();
+        }
+        return self.sprite_sheet.render_rgba(
+            self.spritelets[&id].region.x() as usize,
+            self.spritelets[&id].region.y() as usize,
+            self.spritelets[&id].region.w() as usize,
+            self.spritelets[&id].region.h() as usize,
+            self.spritelets[&id].color_map
+        );
+    }
+
+    pub fn render_sprite_rgba(&self, id: Id) -> ImageBuffer {
+        if !self.sprites.contains_key(&id) {
+            return ImageBuffer::empty();
         }
         return self.sprite_sheet.render_rgba(
             self.spritelets[&id].region.x() as usize,

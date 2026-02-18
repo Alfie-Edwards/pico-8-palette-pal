@@ -227,10 +227,6 @@ input {
     height: 100%;
 }
 
-#selected-spritelet {
-    object-position: right;
-}
-
 .button {
   font-size: 14px;
   background: var(--col-neg-11);
@@ -260,12 +256,18 @@ input {
     flex-grow: 1;
     align-content: flex-start;
     min-width: 416px; /* 3 items wide: 128 * 3 + 16 * 2 */
+    height: 100%;
 }
 
 .item-display > .image-container {
     width: 128px;
     height: 128px;
     box-sizing: border-box;
+}
+
+.item-display > .button {
+    width: 128px;
+    height: 128px;
 }
 
 .edit-grid {
@@ -284,6 +286,18 @@ input {
     border-style: dashed;
     border-color: var(--col-7);
     border-width: 0px;
+
+    background: -webkit-linear-gradient(45deg, rgba(0, 0, 0, 0.0980392) 25%, transparent 25%, transparent 75%, rgba(0, 0, 0, 0.0980392) 75%, rgba(0, 0, 0, 0.0980392) 0), -webkit-linear-gradient(45deg, rgba(0, 0, 0, 0.0980392) 25%, transparent 25%, transparent 75%, rgba(0, 0, 0, 0.0980392) 75%, rgba(0, 0, 0, 0.0980392) 0), white;
+    background: -moz-linear-gradient(45deg, rgba(0, 0, 0, 0.0980392) 25%, transparent 25%, transparent 75%, rgba(0, 0, 0, 0.0980392) 75%, rgba(0, 0, 0, 0.0980392) 0), -moz-linear-gradient(45deg, rgba(0, 0, 0, 0.0980392) 25%, transparent 25%, transparent 75%, rgba(0, 0, 0, 0.0980392) 75%, rgba(0, 0, 0, 0.0980392) 0), white;
+    background: linear-gradient(45deg, rgba(0, 0, 0, 0.0980392) 25%, transparent 25%, transparent 75%, rgba(0, 0, 0, 0.0980392) 75%, rgba(0, 0, 0, 0.0980392) 0), linear-gradient(45deg, rgba(0, 0, 0, 0.0980392) 25%, transparent 25%, transparent 75%, rgba(0, 0, 0, 0.0980392) 75%, rgba(0, 0, 0, 0.0980392) 0), white;
+    background-repeat: repeat, repeat;
+    background-position: 0px 0, 5px 5px;
+    -webkit-transform-origin: 0 0 0;
+    transform-origin: 0 0 0;
+    -webkit-background-clip: content-box;
+    background-clip: content-box;
+    -webkit-background-size: 10px 10px, 10px 10px;
+    background-size: 10px 10px, 10px 10px;
 }
 
 .image-container > canvas {

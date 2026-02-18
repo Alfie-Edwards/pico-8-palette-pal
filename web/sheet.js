@@ -9,7 +9,7 @@ const selected_spritelet_ctx = els.selected_spritelet.getContext("2d", { alpha: 
 function get_image_data() {
     return new ImageData(
         new Uint8ClampedArray(
-            model.render_spritesheet_rgba()
+            model.render_spritesheet_rgba().data
         ),
         128,
         128
@@ -184,8 +184,8 @@ function refresh_selected_spritelet() {
 
     els.selected_spritelet.width = spritelet.region.w;
     els.selected_spritelet.height = spritelet.region.h;
-    const bytes = model.render_spritelet_rgba(selected_spritelet_id);
-    const img = new ImageData(new Uint8ClampedArray(bytes), spritelet.region.w, spritelet.region.h);
+    const buffer = model.render_spritelet_rgba(selected_spritelet_id);
+    const img = new ImageData(new Uint8ClampedArray(buffer.data), buffer.width, buffer.height);
     selected_spritelet_ctx.putImageData(img, 0, 0);
 
     selection_box.set_region(spritelet.region);
@@ -207,8 +207,8 @@ function refresh_spritelet_list() {
         var canvas = document.createElement("canvas");
         canvas.width = spritelet.region.w;
         canvas.height = spritelet.region.h;
-        const bytes = model.render_spritelet_rgba(id);
-        var image_data = new ImageData(new Uint8ClampedArray(bytes), spritelet.region.w, spritelet.region.h);
+        const buffer = model.render_spritelet_rgba(id);
+        var image_data = new ImageData(new Uint8ClampedArray(buffer.data), buffer.width, buffer.height);
         canvas.getContext("2d", { alpha: true }).putImageData(image_data, 0, 0);
 
         container.append(canvas);
@@ -222,6 +222,7 @@ function refresh_spritelet_list() {
             container.style.borderWidth = "3px"
         }
     }
+    els.spritelet_list.append(els.add_spritelet);
 }
 
 els.delete_spritelet.addEventListener("click", (e) => {

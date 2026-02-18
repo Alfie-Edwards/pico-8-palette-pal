@@ -54,3 +54,32 @@ impl Region {
     #[wasm_bindgen(getter)]
     pub fn h(&self) -> u8 { self.h }
 }
+
+#[wasm_bindgen]
+#[derive(Clone, Debug, Eq, PartialEq, Hash)]
+pub struct ImageBuffer {
+    data: Vec<u8>,
+    width: usize,
+    height: usize,
+}
+
+#[wasm_bindgen]
+impl ImageBuffer {
+
+    #[wasm_bindgen(constructor)]
+    pub fn new(data: Vec<u8>, width: usize, height: usize) -> ImageBuffer {
+        Self { data, width, height }
+    }
+    pub fn empty() -> ImageBuffer {
+        ImageBuffer::new(Vec::new(), 0, 0)
+    }
+
+    #[wasm_bindgen(getter)]
+    pub fn data(&self) -> Vec<u8> { self.data.clone() }
+
+    #[wasm_bindgen(getter)]
+    pub fn width(&self) -> usize { self.width }
+
+    #[wasm_bindgen(getter)]
+    pub fn height(&self) -> usize { self.height }
+}

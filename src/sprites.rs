@@ -2,7 +2,7 @@
 use rgb::RGB8;
 use wasm_bindgen::prelude::wasm_bindgen;
 
-use crate::{colors::{ColorMap, PICO8_COLOURS, rgb_to_palette_idx}, ids::Id, primitives::{Pos, Region}};
+use crate::{colors::{ColorMap, PICO8_COLOURS, rgb_to_palette_idx}, ids::Id, primitives::{ImageBuffer, Pos, Region}};
 
 pub const W: usize = 128;
 pub const H: usize = 128;
@@ -63,9 +63,9 @@ impl SpriteSheet {
         Self { data: data }
     }
 
-    pub fn render_rgba(self, x: usize, y: usize, mut w: usize, mut h: usize, color_map: ColorMap) -> Vec<u8> {
+    pub fn render_rgba(self, x: usize, y: usize, mut w: usize, mut h: usize, color_map: ColorMap) -> ImageBuffer {
         if w == 0 || h == 0 || x >= W || y >= H {
-            return Vec::new();
+            return ImageBuffer::empty();
         }
         if (x + w) > W {
             w = W - x;
@@ -73,19 +73,19 @@ impl SpriteSheet {
         if (y + h) > H {
             h = W - y;
         }
-        let mut result = Vec::with_capacity(w * h * 4);
+        let mut data = Vec::with_capacity(w * h * 4);
         for row in y..(y + h) {
             for col in x..(x + w) {
                 match color_map.get(self.data[col][row]) {
                     Some(color_id) =>  {
-                        result.extend(PICO8_COLOURS[(color_id + 16) as usize].iter());
-                        result.push(u8::max_value());
+                        data.extend(PICO8_COLOURS[(color_id + 16) as usize].iter());
+                        data.push(u8::max_value());
                     }
-                    None => result.extend([0, 0, 0, 0].iter()),
+                    None => data.extend([0, 0, 0, 0].iter()),
                 }
             }
         }
-        return result;
+        return ImageBuffer::new(data, w, h);
     }
 }
 
@@ -139,6 +139,10 @@ impl Sprite {
             origin: Pos::origin(),
             color_map: ColorMap::identity(),
         }
+    }
+
+    pub fn num_components(&mut self) -> usize {
+        self.components.len()
     }
 
     pub fn add_component(&mut self, spritelet_id: Id) {
