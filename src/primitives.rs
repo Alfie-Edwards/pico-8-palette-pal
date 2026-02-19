@@ -3,14 +3,14 @@ use wasm_bindgen::prelude::wasm_bindgen;
 #[wasm_bindgen]
 #[derive(Copy, Clone, Debug, Eq, PartialEq, Hash)]
 pub struct Pos {
-    pub x: i8,
-    pub y: i8,
+    pub x: u8,
+    pub y: u8,
 }
 
 #[wasm_bindgen]
 impl Pos {
     #[wasm_bindgen(constructor)]
-    pub fn new(x: i8, y: i8) -> Pos {
+    pub fn new(x: u8, y: u8) -> Pos {
         Pos { x, y }
     }
 

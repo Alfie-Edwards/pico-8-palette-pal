@@ -1,11 +1,12 @@
 import {els, model} from "./globals.js";
+import { Pos, Region } from "./pkg/pico_8_palette_pal.js";
 import { DraggableRegion, onDrag, ZoomPanImage } from "./utils.js";
 
-const image = new ZoomPanImage(els.selected_sprite, els.selected_sprite_minimap, null);
-const selection_box = new DraggableRegion(image);
+const selected_sprite = new ZoomPanImage(els.selected_sprite, els.selected_sprite_minimap);
+const selection_box = new DraggableRegion(selected_sprite, false);
 
 var selected_sprite_id = null;
-var selected_component_id = null;
+var selected_component_i = null;
 
 function get_selected_sprite() {
     if (selected_sprite_id == null) {
@@ -16,8 +17,9 @@ function get_selected_sprite() {
 
 function set_selected_sprite_id(value) {
     selected_sprite_id = value;
-    selection_box.set_region(null);
-    if (get_selected_sprite() == null) {
+    var sprite = get_selected_sprite();
+    if (sprite == null) {
+        selection_box.set_region(null);
         els.sprite_list.hidden = false;
         els.edit_sprite.hidden = true;
     } else {
@@ -27,9 +29,27 @@ function set_selected_sprite_id(value) {
     }
 }
 
-function set_selected_component_id(value) {
-    selected_component_id = value;
+function set_selected_component_i(value) {
+    selected_component_i = value;
     refresh_component_list();
+
+    var sprite = get_selected_sprite();
+    if (sprite == null) {
+        return;
+    }
+
+    var component = sprite.get_component(selected_component_i);
+    if (component != null) {
+        var spritelet = model.get_spritelet(component.spritelet_id);
+        if (spritelet != null) {
+            selection_box.set_region(new Region(
+                component.pos.x,
+                component.pos.y,
+                spritelet.region.w,
+                spritelet.region.h,
+            ));
+        }
+    }
 }
 
 function refresh_selected_sprite() {
@@ -39,7 +59,7 @@ function refresh_selected_sprite() {
     if (sprite == null) {
         return;
     }
-    image.set_image_data(model.render_sprite_rgba(selected_sprite_id));
+    selected_sprite.set_image_data(model.render_sprite_rgba(selected_sprite_id), sprite.top_left);
 }
 
 function refresh_component_list() {
@@ -49,7 +69,7 @@ function refresh_component_list() {
         els.sprite_component_list.append("drag spritelet over to add...")
         return;
     }
-    for (var i = 0; i < sprite.num_components(); i++) {
+    for (let i = 0; i < sprite.num_components(); i++) {
         var component = sprite.get_component(i);
         if (component == null) {
             continue;
@@ -61,10 +81,10 @@ function refresh_component_list() {
         image_container.classList.add("image-container")
 
         container.addEventListener("click", (e) => {
-            set_selected_component_id(Number(i));
+            set_selected_component_i(Number(i));
         });
 
-        if (i == selected_component_id) {
+        if (i == selected_component_i) {
             container.style.borderWidth = "3px"
         }
 
@@ -114,11 +134,21 @@ export function refresh_sprite_spritelet_list() {
         container.addEventListener("pointerup", (e) => {
             els.sprite_component_list_drag_preview.hidden = true;
             els.drag_ghost.hidden = true;
-            if (document.elementFromPoint(e.clientX, e.clientY)?.closest("#sprite-component-list")) {
+            if (document.elementFromPoint(e.clientX, e.clientY)?.closest("#selected-sprite")) {
                 var sprite = get_selected_sprite();
                 if (sprite != null) {
-                    sprite.add_component(id);
+                    let i = sprite.num_components();
+                    let [drop_x, drop_y] = selected_sprite.client_to_image(e.clientX, e.clientY)
+                    sprite.add_component(id, new Pos(drop_x, drop_y));
+                    let component = sprite.get_component(i);
+                    let spritelet = model.get_spritelet(component.spritelet_id);
+                    let [x, y] = selected_sprite.client_to_image(e.clientX, e.clientY);
+                    component.pos = new Pos(
+                        Math.max(0, x - spritelet.region.w),
+                        Math.max(0, y - spritelet.region.h));
+                    sprite.update_component(i, component);
                     model.update_sprite(selected_sprite_id, sprite);
+                    set_selected_component_i(i);
                     refresh_selected_sprite();
                 }
             }
@@ -152,10 +182,55 @@ function refresh_sprite_list() {
     els.sprite_list.append(els.add_sprite);
 }
 
+els.selected_sprite_zoom.addEventListener("input", (e) => {
+    selected_sprite.set_zoom(els.selected_sprite_zoom.valueAsNumber);
+    els.selected_sprite_zoom.valueAsNumber = selected_sprite.zoom;
+});
+
+els.selected_sprite_pan_x.addEventListener("input", (e) => {
+    selected_sprite.set_pan(els.selected_sprite_pan_x.valueAsNumber, selected_sprite.pan.y);
+    els.selected_sprite_pan_x.valueAsNumber = selected_sprite.pan.x;
+});
+
+els.selected_sprite_pan_y.addEventListener("input", (e) => {
+    selected_sprite.set_pan(selected_sprite.pan.x, els.selected_sprite_pan_y.valueAsNumber);
+    els.selected_sprite_pan_y.valueAsNumber = selected_sprite.pan.y;
+});
+
+els.selected_sprite.addEventListener('region_changed', (e) => {
+    if (e.detail.region != null) {
+        var sprite = get_selected_sprite();
+        if (sprite != null) {
+            var component = sprite.get_component(selected_component_i);
+            if (component != null) {
+                component.pos = new Pos(e.detail.region.x, e.detail.region.y);
+                sprite.update_component(selected_component_i, component);
+                model.update_sprite(selected_sprite_id, sprite);
+            }
+            refresh_selected_sprite();
+        }
+    }
+});
+
+els.selected_sprite.addEventListener("zoom_changed", (e) => {
+    els.selected_sprite_zoom.valueAsNumber = selected_sprite.zoom;
+});
+
+els.selected_sprite.addEventListener("pan_changed", (e) => {
+    els.selected_sprite_pan_x.valueAsNumber = selected_sprite.pan.x;
+    els.selected_sprite_pan_y.valueAsNumber = selected_sprite.pan.y;
+});
+
 els.add_sprite.addEventListener("click", (e) => {
     model.new_sprite();
     refresh_sprite_list();
 });
+
+// Layout behaviour that flex can't acheive.
+new ResizeObserver(entries => {
+    const { height } = entries[0].contentRect;
+    els.selected_sprite.style.width = height + "px";
+}).observe(els.selected_sprite);
 
 window.addEventListener("resize", () => {
     selection_box.update();

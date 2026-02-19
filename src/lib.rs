@@ -100,7 +100,7 @@ impl Model {
                             let spritelet_image = self.render_spritelet_color_mapped_rgba(
                                 component.spritelet_id, color_map,
                                 component.flip_x, component.flip_y);
-                            let relative_pos = Pos::new(component.pos.x - l as i8, component.pos.y - t as i8);
+                            let relative_pos = Pos::new(component.pos.x - l as u8, component.pos.y - t as u8);
                             result_image.write(&spritelet_image, relative_pos);
                         },
                         None => { },

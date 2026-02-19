@@ -3,7 +3,7 @@ import { refresh_sprite_spritelet_list } from "./sprites.js";
 import { DraggableRegion, ZoomPanImage } from "./utils.js";
 
 const spritesheet = new ZoomPanImage(els.spritesheet, els.spritesheet_minimap, model.render_spritesheet_rgba());
-const selection_box = new DraggableRegion(spritesheet);
+const selection_box = new DraggableRegion(spritesheet, true);
 var selected_spritelet_id = null;
 const selected_spritelet_ctx = els.selected_spritelet.getContext("2d", { alpha: true });
 
@@ -56,7 +56,7 @@ els.spritesheet_pan_y.addEventListener("input", (e) => {
 });
 
 els.add_spritelet.addEventListener("click", (e) => {
-    const z = 128 / els.spritesheet_zoom.valueAsNumber;
+    const z = 128 / (2 ** els.spritesheet_zoom.valueAsNumber);
     const x = Math.round(els.spritesheet_pan_x.valueAsNumber + 0.25 * z);
     const y = Math.round(els.spritesheet_pan_y.valueAsNumber + 0.25 * z);
     const wh = Math.round(z * 0.5)

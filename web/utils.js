@@ -1,5 +1,8 @@
 import { Region } from "./globals.js";
 
+const W = 128
+const H = 128
+
 export function onDrag(element, handler) {
     var origin = {x: 0, y: 0};
 
@@ -25,36 +28,42 @@ export function onDrag(element, handler) {
 }
 
 export class ZoomPanImage {
-    constructor(main_canvas, minimap_canvas, buffer) {
+    constructor(main_canvas, minimap_canvas, buffer, pos) {
         this.main_canvas = main_canvas;
         this.minimap_canvas = minimap_canvas;
-        this.zoom = 1;
+        this.minimap_canvas.width = W;
+        this.minimap_canvas.height = H;
+        this.zoom = 0;
         this.pan = {x: 0, y: 0}
         this.main_ctx = this.main_canvas.getContext("2d", { alpha: true });
         this.minimap_ctx = this.minimap_canvas.getContext("2d", { alpha: true });
+        this.offscreen_canvas = new OffscreenCanvas(0, 0);
+        this.offscreen_ctx = this.offscreen_canvas.getContext("2d", { alpha: true });
+        this.set_image_data(buffer, pos);
 
         onDrag(this.minimap_canvas, (e) => {
             const rect = this.minimap_canvas.getBoundingClientRect();
-            const offset = 64 / this.zoom;
+            var zoom_amount = (2 ** this.zoom);
+            const offset_x = (this.width / 2) / zoom_amount;
+            const offset_y = (this.height / 2) / zoom_amount;
             this.set_pan(
-                this.width * (e.clientX - rect.left) / rect.width - offset,
-                this.height * (e.clientY - rect.top) / rect.height - offset);
+                this.width * (e.clientX - rect.left) / rect.width - offset_x,
+                this.height * (e.clientY - rect.top) / rect.height - offset_y);
             this.#redraw();
         });
-
-        this.set_image_data(buffer);
     }
 
     set_pan(x, y) {
-        const limit_x = this.width - (this.width / this.zoom);
-        const limit_y = this.height - (this.height / this.zoom);
+        var zoom_amount = (2 ** this.zoom);
+        const limit_x = W - (W / zoom_amount);
+        const limit_y = H - (H / zoom_amount);
         x = Math.max(0, Math.min(x, limit_x));
         y = Math.max(0, Math.min(y, limit_y));
         if (this.pan.x == x && this.pan.y == y) {
             return
         }
-        this.pan.x = x;
-        this.pan.y = y;
+        this.pan.x = Math.round(x);
+        this.pan.y = Math.round(y);
         this.main_canvas.dispatchEvent(
             new CustomEvent('pan_changed', {
                 detail: {
@@ -66,11 +75,16 @@ export class ZoomPanImage {
     }
 
     set_zoom(zoom) {
-        zoom = Math.max(1, zoom);
         if (zoom == this.zoom) {
             return;
         }
-        var prev_zoom = this.zoom
+        if (zoom < 0) {
+            zoom = 0;
+        }
+        if (zoom > 5) {
+            zoom = 5;
+        }
+        var prev_zoom_amount = (2 ** this.zoom)
         this.zoom = zoom
         this.main_canvas.dispatchEvent(
             new CustomEvent('zoom_changed', {
@@ -79,13 +93,18 @@ export class ZoomPanImage {
                 }
             })
         );
-        var pan_x_shift = (this.width / 2) * (this.zoom - prev_zoom) / (prev_zoom * this.zoom);
-        var pan_y_shift = (this.height / 2) * (this.zoom - prev_zoom) / (prev_zoom * this.zoom);
+        var zoom_amount = (2 ** this.zoom);
+        var pan_x_shift = (this.width / 2) * (zoom_amount - prev_zoom_amount) / (prev_zoom_amount * zoom_amount);
+        var pan_y_shift = (this.height / 2) * (zoom_amount - prev_zoom_amount) / (prev_zoom_amount * zoom_amount);
         this.set_pan(this.pan.x + pan_x_shift, this.pan.y + pan_y_shift);
+
+        var main_canvas_scale = 2 ** -this.zoom;
+        this.main_canvas.width = W * main_canvas_scale
+        this.main_canvas.height = H * main_canvas_scale
         this.#redraw();
     }
 
-    set_image_data(buffer) {
+    set_image_data(buffer, pos) {
         if (buffer == null) {
             this.image_data = null;
             this.width = 0;
@@ -101,58 +120,98 @@ export class ZoomPanImage {
             this.width = buffer.width;
             this.height = buffer.height;
         }
-        this.main_canvas.width = this.width
-        this.main_canvas.height = this.height
-        this.minimap_canvas.width = this.width
-        this.minimap_canvas.height = this.height
+        if (pos == null) {
+            this.pos = {x: 0, y: 0}
+        } else {
+            this.pos = { x: pos.x, y: pos.y };
+        }
+        var main_canvas_scale = 2 ** -this.zoom;
+        this.main_canvas.width = W * main_canvas_scale
+        this.main_canvas.height = H * main_canvas_scale
+        this.offscreen_canvas.width = this.width
+        this.offscreen_canvas.height = this.height
+
         if (this.image_data != null) {
+            this.offscreen_ctx.putImageData(this.image_data, 0, 0);
             this.main_canvas.hidden = false;
             this.#redraw();
         } else {
             this.main_canvas.hidden = true;
         }
+        console.log(this.pos)
     }
 
     client_to_image(x, y) {
+        var zoom_amount = (2 ** this.zoom);
         const rect = this.main_canvas.getBoundingClientRect();
         const view_x = (x - rect.x) / rect.width;
         const view_y = (y - rect.y) / rect.height;
         return [
-            this.pan.x + view_x * (this.width / this.zoom),
-            this.pan.y + view_y * (this.height / this.zoom)
+            this.pan.x + view_x * (W / zoom_amount),
+            this.pan.y + view_y * (H / zoom_amount)
         ];
     }
 
     #redraw() {
-        const width = this.width / this.zoom;
-        const height = this.height / this.zoom;
-        this.main_ctx.putImageData(this.image_data, 0, 0);
-        this.main_ctx.imageSmoothingEnabled = false;
-        this.main_ctx.drawImage(this.main_canvas, this.pan.x, this.pan.y, width, height, 0, 0, this.width, this.height);
+        var zoom_amount = (2 ** this.zoom);
+        this.main_ctx.clearRect(0, 0, this.width, this.height);
+        this.main_ctx.imageSmoothingEnabled = false;const view_width  = W / zoom_amount;
+        const view_height = H / zoom_amount;
+        const raw_src_x = this.pan.x - this.pos.x;
+        const raw_src_y = this.pan.y - this.pos.y;
+        const src_x = Math.max(0, raw_src_x);
+        const src_y = Math.max(0, raw_src_y);
+        const width  = Math.max(0, Math.min(this.width,  raw_src_x + view_width) - src_x);
+        const height = Math.max(0, Math.min(this.height, raw_src_y + view_height) - src_y);
+        const dst_x = Math.max(0, -raw_src_x);
+        const dst_y = Math.max(0, -raw_src_y);
 
-        this.minimap_ctx.putImageData(this.image_data, 0, 0);
+        /* main canvas */
+        this.main_ctx.clearRect(0, 0, view_width, view_height);
+        this.main_ctx.drawImage(
+            this.offscreen_canvas,
+            src_x, src_y, width, height,
+            dst_x, dst_y, width, height
+        );
+        this.main_ctx.save();
+        this.main_ctx.fillStyle = "rgba(0, 0, 0, 0.3)";
+        this.main_ctx.beginPath();
+        this.main_ctx.rect(0, 0, view_width, view_height);
+        this.main_ctx.rect(dst_x, dst_y, width, height);
+        this.main_ctx.fill("evenodd");
+        this.main_ctx.rect(dst_x, dst_y, width, height);
+        this.main_ctx.restore();
+
+        /* minimap */
+        this.minimap_ctx.clearRect(0, 0, W, H);
+        this.minimap_ctx.drawImage(
+            this.offscreen_canvas,
+            0, 0, this.width, this.height,
+            this.pos.x, this.pos.y, this.width, this.height
+        );
         this.minimap_ctx.save();
         this.minimap_ctx.fillStyle = "rgba(128, 128, 128, 0.5)";
         this.minimap_ctx.beginPath();
-        this.minimap_ctx.rect(0, 0, this.width, this.height);
-        this.minimap_ctx.rect(this.pan.x, this.pan.y, width, height);
+        this.minimap_ctx.rect(0, 0, W, H);
+        this.minimap_ctx.rect(this.pan.x, this.pan.y, view_width, view_height);
         this.minimap_ctx.fill("evenodd");
         this.minimap_ctx.strokeStyle = "white";
         this.minimap_ctx.lineWidth = 1;
         this.minimap_ctx.strokeRect(
             Math.round(this.pan.x) + 0.5,
             Math.round(this.pan.y) + 0.5,
-            Math.round(width) - 1,
-            Math.round(height) - 1
+            Math.round(view_width) - 1,
+            Math.round(view_height) - 1
         );
         this.minimap_ctx.restore();
     }
 }
 
 export class DraggableRegion {
-    constructor(image) {
+    constructor(image, allow_resize) {
         this.image = image;
         this.region = null;
+        this.allow_resize = allow_resize;
 
         this.box = document.createElement("div");
         this.anchor_tl = document.createElement("div");
@@ -173,85 +232,88 @@ export class DraggableRegion {
         this.image.main_canvas.addEventListener("zoom_changed", (e) => { this.update(); });
         this.image.main_canvas.addEventListener("pan_changed", (e) => { this.update(); });
 
-        onDrag(this.anchor_tl, (e) => {
-            if (this.region == null) {
-                return;
-            }
-            const r = this.region.x + this.region.w;
-            const b = this.region.y + this.region.h;
-            let [sheet_x, sheet_y] = this.image.client_to_image(e.clientX, e.clientY);
-            sheet_x = Math.max(0, Math.min(r - 1, sheet_x));
-            sheet_y = Math.max(0, Math.min(b - 1, sheet_y));
-            const dx = sheet_x - this.region.x;
-            const dy = sheet_y - this.region.y;
+        if (this.allow_resize) {
+            onDrag(this.anchor_tl, (e) => {
+                if (this.region == null) {
+                    return;
+                }
+                const r = this.region.x + this.region.w;
+                const b = this.region.y + this.region.h;
+                let [sheet_x, sheet_y] = this.image.client_to_image(e.clientX, e.clientY);
+                sheet_x = Math.max(0, Math.min(r - 1, sheet_x));
+                sheet_y = Math.max(0, Math.min(b - 1, sheet_y));
+                const dx = sheet_x - this.region.x;
+                const dy = sheet_y - this.region.y;
 
-            this.set_region(new Region(
-                Math.round(sheet_x),
-                Math.round(sheet_y),
-                Math.round(this.region.w - dx),
-                Math.round(this.region.h - dy)));
-        });
+                this.set_region(new Region(
+                    Math.round(sheet_x),
+                    Math.round(sheet_y),
+                    Math.round(this.region.w - dx),
+                    Math.round(this.region.h - dy)));
+            });
 
-        onDrag(this.anchor_tr, (e) => {
-            if (this.region == null) {
-                return;
-            }
-            const b = this.region.y + this.region.h;
-            let [sheet_x, sheet_y] = this.image.client_to_image(e.clientX, e.clientY);
-            sheet_x = Math.max(this.region.x + 1, Math.min(128, sheet_x));
-            sheet_y = Math.max(0, Math.min(b - 1, sheet_y));
-            const dy = sheet_y - this.region.y;
+            onDrag(this.anchor_tr, (e) => {
+                if (this.region == null) {
+                    return;
+                }
+                const b = this.region.y + this.region.h;
+                let [sheet_x, sheet_y] = this.image.client_to_image(e.clientX, e.clientY);
+                sheet_x = Math.max(this.region.x + 1, Math.min(W, sheet_x));
+                sheet_y = Math.max(0, Math.min(b - 1, sheet_y));
+                const dy = sheet_y - this.region.y;
 
-            this.set_region(new Region(
-                this.region.x,
-                Math.round(sheet_y),
-                Math.round(sheet_x - this.region.x),
-                Math.round(this.region.h - dy)));
-        });
+                this.set_region(new Region(
+                    this.region.x,
+                    Math.round(sheet_y),
+                    Math.round(sheet_x - this.region.x),
+                    Math.round(this.region.h - dy)));
+            });
 
-        onDrag(this.anchor_bl, (e) => {
-            if (this.region == null) {
-                return;
-            }
-            const r = this.region.x + this.region.w;
-            let [sheet_x, sheet_y] = this.image.client_to_image(e.clientX, e.clientY);
-            sheet_x = Math.max(0, Math.min(r - 1, sheet_x));
-            sheet_y = Math.max(this.region.y + 1, Math.min(this.image.height, sheet_y));
-            const dx = sheet_x - this.region.x;
+            onDrag(this.anchor_bl, (e) => {
+                if (this.region == null) {
+                    return;
+                }
+                const r = this.region.x + this.region.w;
+                let [sheet_x, sheet_y] = this.image.client_to_image(e.clientX, e.clientY);
+                sheet_x = Math.max(0, Math.min(r - 1, sheet_x));
+                sheet_y = Math.max(this.region.y + 1, Math.min(H, sheet_y));
+                const dx = sheet_x - this.region.x;
 
-            this.set_region(new Region(
-                Math.round(sheet_x),
-                this.region.y,
-                Math.round(this.region.w - dx),
-                Math.round(sheet_y - this.region.y)));
-        });
+                this.set_region(new Region(
+                    Math.round(sheet_x),
+                    this.region.y,
+                    Math.round(this.region.w - dx),
+                    Math.round(sheet_y - this.region.y)));
+            });
 
-        onDrag(this.anchor_br, (e) => {
-            if (this.region == null) {
-                return;
-            }
-            let [sheet_x, sheet_y] = this.image.client_to_image(e.clientX, e.clientY);
-            sheet_x = Math.max(this.region.x + 1, Math.min(this.image.width, sheet_x));
-            sheet_y = Math.max(this.region.y + 1, Math.min(this.image.height, sheet_y));
+            onDrag(this.anchor_br, (e) => {
+                if (this.region == null) {
+                    return;
+                }
+                let [sheet_x, sheet_y] = this.image.client_to_image(e.clientX, e.clientY);
+                sheet_x = Math.max(this.region.x + 1, Math.min(W, sheet_x));
+                sheet_y = Math.max(this.region.y + 1, Math.min(H, sheet_y));
 
-            this.set_region(new Region(
-                this.region.x,
-                this.region.y,
-                Math.round(sheet_x - this.region.x),
-                Math.round(sheet_y - this.region.y)));
-        });
+                this.set_region(new Region(
+                    this.region.x,
+                    this.region.y,
+                    Math.round(sheet_x - this.region.x),
+                    Math.round(sheet_y - this.region.y)));
+            });
+        }
 
         onDrag(this.box, (e, drag_offset) => {
             if (this.region == null) {
                 return;
             }
+            var zoom_amount = (2 ** this.image.zoom);
             const rect = this.image.main_canvas.getBoundingClientRect();
-            const zx = this.image.width / this.image.zoom;
-            const zy = this.image.height / this.image.zoom;
+            const zx = W / zoom_amount;
+            const zy = H / zoom_amount;
             var dx = drag_offset.x * zx / rect.width;
             var dy = drag_offset.y * zy / rect.height;
-            dx = Math.max(-this.region.x, Math.min(this.image.width - this.region.x -this.region.w, dx));
-            dy = Math.max(-this.region.y, Math.min(this.image.height - this.region.y -this.region.h, dy));
+            dx = Math.max(-this.region.x, Math.min(W - this.region.x -this.region.w, dx));
+            dy = Math.max(-this.region.y, Math.min(H - this.region.y -this.region.h, dy));
 
             this.set_region(new Region(
                 Math.round(this.region.x + dx),
@@ -292,11 +354,18 @@ export class DraggableRegion {
             return;
         }
 
-        const rel_l = (this.region.x - this.image.pan.x) * this.image.zoom / this.image.width;
-        const rel_t = (this.region.y - this.image.pan.y) * this.image.zoom / this.image.height;
-        const rel_r = (this.region.x + this.region.w - this.image.pan.x) * this.image.zoom / this.image.width;
-        const rel_b = (this.region.y + this.region.h - this.image.pan.y) * this.image.zoom / this.image.height;
+        var zoom_amount = (2 ** this.image.zoom);
+        var x_offset = 0;
+        var y_offset = 0;
         const spritesheet_rect = this.image.main_canvas.getBoundingClientRect();
+        if (zoom_amount < 1) {
+            x_offset = (1 - zoom_amount) / 2;
+            y_offset = (1 - zoom_amount) / 2;
+        }
+        const rel_l = x_offset + (this.region.x - this.image.pan.x) * zoom_amount / W;
+        const rel_t = y_offset + (this.region.y - this.image.pan.y) * zoom_amount / H;
+        const rel_r = x_offset + (this.region.x + this.region.w - this.image.pan.x) * zoom_amount / W;
+        const rel_b = y_offset + (this.region.y + this.region.h - this.image.pan.y) * zoom_amount / H;
         const pix_l = rel_l * spritesheet_rect.width;
         const pix_t = rel_t * spritesheet_rect.height;
         const pix_r = rel_r * spritesheet_rect.width;

@@ -26,7 +26,9 @@
       <div id="spritelet-list" class="item-display">
         <button id="add-spritelet" class="button pixel-corners-1">new spritelet</button>
       </div>
+
       <div id="edit-spritelet-divider" class="hline"></div>
+
       <div id="selected-spritelet-toolbar" class="toolbar" hidden>
         <div class="image-container">
           <canvas id="selected-spritelet"></canvas>
@@ -55,18 +57,27 @@
         <button id="add-sprite" class="button pixel-corners-1">new sprite</button>
       </div>
       <div id="edit-sprite" class="h-box" hidden>
-        <div class="v-box">
-          <div id="selected-sprite-box" class="image-container">
-            <canvas id="selected-sprite"></canvas>
+        <div id="sprite-component-list" class="v-box">
+          drag spritelet over to add...
+        </div>
+
+        <div class="vline"></div>
+
+        <div class="v-box" style="width: min-content;">
+          <div id="selected-sprite-box" class="interactive-image image-container">
+            <canvas id="selected-sprite" class="interactive-image"></canvas>
+            <div id="sprite-component-list-drag-preview" class="drag-preview" hidden>drop spritelet here to add...</div>
           </div>
+
           <div class="hline"></div>
+
           <div class="toolbar">
-            <div id="image-container">
+            <div class="image-container">
               <canvas id="selected-sprite-minimap" class="minimap"></canvas>
             </div>
             <form class="edit-grid">
               <label for="selected-sprite-zoom">zoom</label>
-              <input id="selected-sprite-zoom" value="1" type="number" min="1" max="8">
+              <input id="selected-sprite-zoom" value="0" type="number" min="0" max="5" step="0.5">
               <label for="selected-sprite-pan-x">x</label>
               <input id="selected-sprite-pan-x" value="0" type="number" min="0" max="128">
               <label for="selected-sprite-pan-y">y</label>
@@ -77,13 +88,6 @@
             </div>
           </div>
         </div>
-        <div class="vline"></div>
-        <div class="v-box">
-          <div id="sprite-component-list" class="v-box">
-            drag spritelet over to add...
-          </div>
-          <div id="sprite-component-list-drag-preview" class="drag-preview" hidden>drop spritelet here to add...</div>
-      </div>
     </section>
 
     <section class="tab-pane" data-tab="scenes">
@@ -97,17 +101,19 @@
 
   <div class="pixel-corners-2 ui-panel" id="right-panel">
     <section class="tab-pane" data-tab="sheet">
-      <div id="spritesheet-box">
-        <canvas id="spritesheet"></canvas>
+      <div id="spritesheet-box" class="interactive-image-box image-container">
+        <canvas id="spritesheet" class="interactive-image"></canvas>
       </div>
+
       <div class="hline"></div>
+
       <div class="toolbar">
         <div class="image-container">
           <canvas id="spritesheet-minimap" class="minimap"></canvas>
         </div>
         <form class="edit-grid">
           <label for="spritesheet-zoom">zoom</label>
-          <input id="spritesheet-zoom" value="1" type="number" min="1" max="8">
+          <input id="spritesheet-zoom" value="0" type="number" min="0" max="5" step="0.5">
           <label for="spritesheet-pan-x">x</label>
           <input id="spritesheet-pan-x" value="0" type="number" min="0" max="128">
           <label for="spritesheet-pan-y">y</label>

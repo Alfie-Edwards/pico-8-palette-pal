@@ -1,4 +1,3 @@
-
 use rgb::RGB8;
 use wasm_bindgen::prelude::wasm_bindgen;
 
@@ -116,10 +115,10 @@ pub struct SpriteComponent {
 impl SpriteComponent {
 
     #[wasm_bindgen(constructor)]
-    pub fn new(spritelet_id: Id) -> SpriteComponent {
+    pub fn new(spritelet_id: Id, pos: Pos) -> SpriteComponent {
         Self {
             spritelet_id: spritelet_id,
-            pos: Pos::origin(),
+            pos: pos,
             flip_x: false,
             flip_y: false,
             color_map: ColorMap::identity(),
@@ -151,8 +150,8 @@ impl Sprite {
         self.components.len()
     }
 
-    pub fn add_component(&mut self, spritelet_id: Id) {
-        self.components.push(SpriteComponent::new(spritelet_id));
+    pub fn add_component(&mut self, spritelet_id: Id, pos: Pos) {
+        self.components.push(SpriteComponent::new(spritelet_id, pos));
     }
 
     pub fn get_component(&self, i: usize) -> Option<SpriteComponent> {
@@ -196,6 +195,21 @@ impl Sprite {
         if i > 0 && i < self.components.len(){
             self.components.swap(i - 1, i);
         }
+    }
+
+    #[wasm_bindgen(getter)]
+    pub fn top_left(&self) -> Pos {
+        if self.components.len() == 0 {
+            return Pos::origin();
+        }
+        let mut x = u8::MAX;
+        let mut y = u8::MAX;
+
+        for component in &self.components {
+            x = x.min(component.pos.x);
+            y = y.min(component.pos.y);
+        }
+        return Pos::new(x, y);
     }
 }
 
