@@ -138,7 +138,6 @@ export class ZoomPanImage {
         } else {
             this.main_canvas.hidden = true;
         }
-        console.log(this.pos)
     }
 
     client_to_image(x, y) {

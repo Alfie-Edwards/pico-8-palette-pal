@@ -69,7 +69,7 @@ function refresh_component_list() {
         els.sprite_component_list.append("drag spritelet over to add...")
         return;
     }
-    for (let i = 0; i < sprite.num_components(); i++) {
+    for (let i = sprite.num_components() - 1; i >= 0; i--) {
         var component = sprite.get_component(i);
         if (component == null) {
             continue;
@@ -85,7 +85,7 @@ function refresh_component_list() {
         });
 
         if (i == selected_component_i) {
-            container.style.borderWidth = "3px"
+            image_container.style.borderWidth = "3px"
         }
 
         var canvas = document.createElement("canvas");
@@ -98,9 +98,99 @@ function refresh_component_list() {
         canvas.height = buffer.height;
         var image_data = new ImageData(new Uint8ClampedArray(buffer.data), buffer.width, buffer.height);
         canvas.getContext("2d", { alpha: true }).putImageData(image_data, 0, 0);
-
         image_container.append(canvas);
+
+        var flip_bar = document.createElement("div");
+        flip_bar.classList.add("v-box");
+        var flip_x_label = document.createElement("label");
+        var flip_y_label = document.createElement("label");
+        flip_x_label.append("flip-x");
+        flip_y_label.append("flip-y");
+        var flip_x = document.createElement("input");
+        var flip_y = document.createElement("input");
+        flip_x.type = "checkbox";
+        flip_y.type = "checkbox";
+        flip_x.checked = component.flip_x;
+        flip_y.checked = component.flip_y;
+        flip_x.addEventListener("click", (e) => { e.stopPropagation(); });
+        flip_y.addEventListener("click", (e) => { e.stopPropagation(); });
+        flip_x.addEventListener("change", (e) => {
+            var sprite = get_selected_sprite();
+            if (sprite != null) {
+                var component = sprite.get_component(i);
+                if (component != null) {
+                    component.flip_x = e.target.checked;
+                    sprite.update_component(i, component);
+                    model.update_sprite(selected_sprite_id, sprite);
+                    refresh_component_list();
+                    refresh_selected_sprite();
+                }
+            }
+        });
+        flip_y.addEventListener("change", (e) => {
+            var sprite = get_selected_sprite();
+            if (sprite != null) {
+                var component = sprite.get_component(i);
+                if (component != null) {
+                    component.flip_y = e.target.checked;
+                    sprite.update_component(i, component);
+                    model.update_sprite(selected_sprite_id, sprite);
+                    refresh_component_list();
+                    refresh_selected_sprite();
+                }
+            }
+        });
+        flip_x_label.append(flip_x);
+        flip_y_label.append(flip_y);
+        flip_bar.append(flip_x_label);
+        flip_bar.append(flip_y_label);
+
+        var order_bar = document.createElement("div");
+        order_bar.classList.add("v-box");
+        var shift_up = document.createElement("button");
+        var shift_down = document.createElement("button");
+        shift_up.classList.add("button", "pixel-corners-1");
+        shift_down.classList.add("button", "pixel-corners-1");
+        shift_up.append("▲");
+        shift_down.append("▼");
+        shift_up.addEventListener("click", (e) => {
+            var sprite = get_selected_sprite();
+            if (sprite != null) {
+                sprite.shift_component_up(i);
+                model.update_sprite(selected_sprite_id, sprite);
+                if (i == selected_component_i && i < (sprite.num_components() - 1)) {
+                    set_selected_component_i(i + 1);
+                } else if (i == (selected_component_i - 1)) {
+                    set_selected_component_i(i);
+                } else {
+                    refresh_component_list();
+                }
+                refresh_selected_sprite();
+            }
+            e.stopPropagation();
+        });
+        shift_down.addEventListener("click", (e) => {
+            var sprite = get_selected_sprite();
+            if (sprite != null) {
+                sprite.shift_component_down(i);
+                model.update_sprite(selected_sprite_id, sprite);
+                if (i == selected_component_i && i > 0) {
+                    set_selected_component_i(i - 1);
+                } else if (i == (selected_component_i + 1)) {
+                    set_selected_component_i(i);
+                } else {
+                    refresh_component_list();
+                }
+                refresh_selected_sprite();
+            }
+            e.stopPropagation();
+        });
+        order_bar.append(shift_up);
+        order_bar.append(shift_down);
+
         container.append(image_container);
+        container.append(flip_bar);
+        container.append(order_bar);
         els.sprite_component_list.append(container);
     }
 }
@@ -175,8 +265,6 @@ function refresh_sprite_list() {
         canvas.height = buffer.height;
         var image_data = new ImageData(new Uint8ClampedArray(buffer.data), buffer.width, buffer.height);
         canvas.getContext("2d", { alpha: true }).putImageData(image_data, 0, 0);
-
-        container.append(canvas);
         els.sprite_list.append(container);
     }
     els.sprite_list.append(els.add_sprite);

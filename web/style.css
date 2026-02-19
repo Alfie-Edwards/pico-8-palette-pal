@@ -413,12 +413,18 @@ input {
 
 #sprite-component-list > .h-box {
     height: 128px;
-    border-style: dashed;
-    border-width: 0px;
 }
-
 
 #sprite-component-list > .h-box > .image-container {
     width: 128px;
     height: 128px;
+    flex-shrink: 0;
+    border-style: dashed;
+    border-width: 0px;
+    box-sizing: border-box;
 }
+
+#sprite-component-list > .h-box > .v-box > * {
+    flex-grow: 1;
+}
+

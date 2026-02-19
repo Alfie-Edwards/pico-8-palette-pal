@@ -141,9 +141,9 @@ impl Model {
         }
     }
 
-    pub fn update_spritelet(&mut self, id: Id, value: Spritelet) {
+    pub fn update_spritelet(&mut self, id: Id, value: &Spritelet) {
         if self.spritelets.contains_key(&id) {
-            self.spritelets.insert(id, value);
+            self.spritelets.insert(id, value.clone());
         }
     }
 
@@ -177,9 +177,9 @@ impl Model {
         }
     }
 
-    pub fn update_sprite(&mut self, id: Id, value: Sprite) {
+    pub fn update_sprite(&mut self, id: Id, value: &Sprite) {
         if self.sprites.contains_key(&id) {
-            self.sprites.insert(id, value);
+            self.sprites.insert(id, value.clone());
         }
     }
 
@@ -212,9 +212,9 @@ impl Model {
         }
     }
 
-    pub fn update_scene(&mut self, id: Id, value: Scene) {
+    pub fn update_scene(&mut self, id: Id, value: &Scene) {
         if self.scenes.contains_key(&id) {
-            self.scenes.insert(id, value);
+            self.scenes.insert(id, value.clone());
         }
     }
 
