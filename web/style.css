@@ -131,7 +131,7 @@ input {
 }
 
 [hidden] {
-  visibility: hidden;
+  display: none !important;
 }
 
 .ui-panel {
@@ -324,16 +324,16 @@ input {
 
 .selector-box {
     background-color: transparent; box-shadow:
-    0 0 0 1px white,
-    0 0 0 2px black;
+    0 0 0 1px --col-7,
+    0 0 0 2px var(--col-0);
     position: absolute;
     min-width: 1px;
     min-height: 1px;
 }
 
 .selector-anchor {
-    background-color: white;
-    border: 1px solid black;
+    background-color: var(--col-7);
+    border: 1px solid var(--col-0);
     position: absolute;
     width: 13px;
     height: 13px;
@@ -342,15 +342,73 @@ input {
 }
 
 .h-box {
+    position: relative;
     display: flex;
     flex-direction: row;
     gap: 16px;
+    width: 100%;
     height: 100%;
 }
 
 .v-box {
+    position: relative;
     display: flex;
     flex-direction: column;
     gap: 16px;
     width: 100%;
+    height: 100%;
+}
+
+#drag-ghost {
+    position: fixed;
+    pointer-events: none;
+    opacity: 0.5;
+}
+
+.drag-preview {
+    display: flex;
+    position: absolute;
+    width: 50%;
+    height: 50%;
+    padding: 25%;
+    opacity: 0.75;
+    background: var(--col-neg-11);
+    align-items: center;
+    text-align: center;
+    pointer-events: none;
+}
+
+.drag-preview::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  pointer-events: none;
+
+  padding: 5px;
+  background:
+    repeating-linear-gradient(90deg, var(--col-7) 0 8px, transparent 8px 16px),
+    repeating-linear-gradient(180deg, var(--col-7) 0 8px, transparent 8px 16px),
+    repeating-linear-gradient(270deg, var(--col-7) 0 8px, transparent 8px 16px),
+    repeating-linear-gradient(0deg, var(--col-7) 0 8px, transparent 8px 16px);
+  background-size: 100% 5px, 5px 100%, 100% 5px, 5px 100%;
+  background-position: 0 0, 100% 0, 0 100%, 0 0;
+  background-repeat: no-repeat;
+  animation: marching-ants 1s linear infinite;
+}
+
+@keyframes marching-ants {
+  to {
+    background-position: 16px 0, 100% 16px, -16px 100%, 0 -16px;
+  }
+}
+
+#sprite-component-list > .h-box {
+    height: 128px;
+}
+
+
+#sprite-component-list > .h-box > .image-container {
+    width: 128px;
+    height: 128px;
 }

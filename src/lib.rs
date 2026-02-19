@@ -41,20 +41,21 @@ impl Model {
     }
 
     pub fn render_spritesheet_rgba(&self) -> ImageBuffer {
-        self.sprite_sheet.render_rgba(Region::new(0, 0, W as u8, H as u8), ColorMap::identity())
+        self.sprite_sheet.render_rgba(Region::new(0, 0, W as u8, H as u8), ColorMap::identity(), false, false)
     }
 
     pub fn render_spritelet_rgba(&self, id: Id) -> ImageBuffer {
-        self.render_spritelet_color_mapped_rgba(id, ColorMap::identity())
+        self.render_spritelet_color_mapped_rgba(id, ColorMap::identity(), false, false)
     }
 
-    pub fn render_spritelet_color_mapped_rgba(&self, id: Id, color_map: ColorMap) -> ImageBuffer {
+    pub fn render_spritelet_color_mapped_rgba(&self, id: Id, color_map: ColorMap, flip_x: bool, flip_y: bool) -> ImageBuffer {
         if !self.spritelets.contains_key(&id) {
             return ImageBuffer::empty();
         }
         return self.sprite_sheet.render_rgba(
             self.spritelets[&id].region,
             self.spritelets[&id].color_map * color_map,
+            flip_x, flip_y,
         );
     }
 
@@ -96,7 +97,9 @@ impl Model {
                 for i in 0..sprite.num_components() {
                     match self.sprites[&id].get_component(i) {
                         Some(component) => {
-                            let spritelet_image = self.render_spritelet_color_mapped_rgba(component.spritelet_id, color_map);
+                            let spritelet_image = self.render_spritelet_color_mapped_rgba(
+                                component.spritelet_id, color_map,
+                                component.flip_x, component.flip_y);
                             let relative_pos = Pos::new(component.pos.x - l as i8, component.pos.y - t as i8);
                             result_image.write(&spritelet_image, relative_pos);
                         },

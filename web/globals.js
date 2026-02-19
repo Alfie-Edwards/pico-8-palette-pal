@@ -29,5 +29,8 @@ export const els = Object.fromEntries(
         "selected-sprite",
         "selected-sprite-minimap",
         "edit-sprite",
+        "sprite-component-list",
+        "drag-ghost",
+        "sprite-component-list-drag-preview",
     ].map( id => [id.replaceAll("-", "_"), document.getElementById(id)])
 )

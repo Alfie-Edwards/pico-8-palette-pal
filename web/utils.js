@@ -25,7 +25,7 @@ export function onDrag(element, handler) {
 }
 
 export class ZoomPanImage {
-    constructor(main_canvas, minimap_canvas, image_data, width, height) {
+    constructor(main_canvas, minimap_canvas, buffer) {
         this.main_canvas = main_canvas;
         this.minimap_canvas = minimap_canvas;
         this.zoom = 1;
@@ -42,7 +42,7 @@ export class ZoomPanImage {
             this.#redraw();
         });
 
-        this.set_image_data(image_data, width, height);
+        this.set_image_data(buffer);
     }
 
     set_pan(x, y) {
@@ -85,14 +85,26 @@ export class ZoomPanImage {
         this.#redraw();
     }
 
-    set_image_data(image_data, width, height) {
-        this.image_data = image_data;
-        this.width = width;
-        this.height = height;
-        this.main_canvas.width = width
-        this.main_canvas.height = height
-        this.minimap_canvas.width = width
-        this.minimap_canvas.height = height
+    set_image_data(buffer) {
+        if (buffer == null) {
+            this.image_data = null;
+            this.width = 0;
+            this.height = 0;
+        } else {
+            this.image_data = new ImageData(
+                new Uint8ClampedArray(
+                    buffer.data
+                ),
+                buffer.width,
+                buffer.height
+            );
+            this.width = buffer.width;
+            this.height = buffer.height;
+        }
+        this.main_canvas.width = this.width
+        this.main_canvas.height = this.height
+        this.minimap_canvas.width = this.width
+        this.minimap_canvas.height = this.height
         if (this.image_data != null) {
             this.main_canvas.hidden = false;
             this.#redraw();
@@ -112,7 +124,6 @@ export class ZoomPanImage {
     }
 
     #redraw() {
-        console.log("REDRAW")
         const width = this.width / this.zoom;
         const height = this.height / this.zoom;
         this.main_ctx.putImageData(this.image_data, 0, 0);

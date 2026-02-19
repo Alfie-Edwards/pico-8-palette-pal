@@ -54,14 +54,16 @@
       <div id="sprite-list" class="item-display">
         <button id="add-sprite" class="button pixel-corners-1">new sprite</button>
       </div>
-      <div id="edit-sprite" class="h-box">
-        <div class="v-box" hidden>
-          <div id="selected-sprite-box">
+      <div id="edit-sprite" class="h-box" hidden>
+        <div class="v-box">
+          <div id="selected-sprite-box" class="image-container">
             <canvas id="selected-sprite"></canvas>
           </div>
           <div class="hline"></div>
           <div class="toolbar">
-            <canvas id="selected-sprite-minimap" class="minimap"></canvas>
+            <div id="image-container">
+              <canvas id="selected-sprite-minimap" class="minimap"></canvas>
+            </div>
             <form class="edit-grid">
               <label for="selected-sprite-zoom">zoom</label>
               <input id="selected-sprite-zoom" value="1" type="number" min="1" max="8">
@@ -76,7 +78,11 @@
           </div>
         </div>
         <div class="vline"></div>
-        <div id="sprite-component-list" class="item-display"></div>
+        <div class="v-box">
+          <div id="sprite-component-list" class="v-box">
+            drag spritelet over to add...
+          </div>
+          <div id="sprite-component-list-drag-preview" class="drag-preview" hidden>drop spritelet here to add...</div>
       </div>
     </section>
 
@@ -96,7 +102,9 @@
       </div>
       <div class="hline"></div>
       <div class="toolbar">
-        <canvas id="spritesheet-minimap" class="minimap"></canvas>
+        <div class="image-container">
+          <canvas id="spritesheet-minimap" class="minimap"></canvas>
+        </div>
         <form class="edit-grid">
           <label for="spritesheet-zoom">zoom</label>
           <input id="spritesheet-zoom" value="1" type="number" min="1" max="8">
@@ -126,6 +134,7 @@
   </div>
 
   <script type="module" src="./main.js" defer></script>
+  <canvas id="drag-ghost" hidden></canvas>
 </body>
 
 </html>

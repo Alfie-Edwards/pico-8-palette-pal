@@ -63,7 +63,7 @@ impl SpriteSheet {
         Self { data: data }
     }
 
-    pub fn render_rgba(self, region: Region, color_map: ColorMap) -> ImageBuffer {
+    pub fn render_rgba(self, region: Region, color_map: ColorMap, flip_x: bool, flip_y: bool) -> ImageBuffer {
         let x = region.x as usize;
         let y = region.y as usize;
         let mut w = region.w as usize;
@@ -78,8 +78,10 @@ impl SpriteSheet {
             h = W - y;
         }
         let mut data = Vec::with_capacity(w * h * 4);
-        for row in y..(y + h) {
-            for col in x..(x + w) {
+        for j in 0..h {
+            let row =  if flip_y { y + h - 1 - j } else { y + j };
+            for i in 0..w {
+                let col: usize =  if flip_x { x + w - 1 - i } else { x + i };
                 match color_map.get(self.data[col][row]) {
                     Some(color_id) =>  {
                         data.extend(PICO8_COLOURS[(color_id + 16) as usize].iter());

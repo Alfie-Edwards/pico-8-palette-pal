@@ -1,20 +1,11 @@
 import {els, model, Region} from "./globals.js";
+import { refresh_sprite_spritelet_list } from "./sprites.js";
 import { DraggableRegion, ZoomPanImage } from "./utils.js";
 
-const spritesheet = new ZoomPanImage(els.spritesheet, els.spritesheet_minimap, get_image_data(), 128, 128);
+const spritesheet = new ZoomPanImage(els.spritesheet, els.spritesheet_minimap, model.render_spritesheet_rgba());
 const selection_box = new DraggableRegion(spritesheet);
 var selected_spritelet_id = null;
 const selected_spritelet_ctx = els.selected_spritelet.getContext("2d", { alpha: true });
-
-function get_image_data() {
-    return new ImageData(
-        new Uint8ClampedArray(
-            model.render_spritesheet_rgba().data
-        ),
-        128,
-        128
-    );
-}
 
 els.load_spritesheet_button.addEventListener("change", async (e) => {
     const f = e.target.files[0];
@@ -42,9 +33,8 @@ els.load_spritesheet_button.addEventListener("change", async (e) => {
     if (rgba.length != (128 * 128 * 4)) {
         return;
     }
-    console.log(rgba)
-    model.load_spritesheet_rgba(rgba);
-    spritesheet.set_image_data(get_image_data(), 128, 128);
+    model.load_spritesheet_rgba(rgba)
+    spritesheet.set_image_data(model.render_spritesheet_rgba());
     refresh_selected_spritelet();
     refresh_spritelet_list();
 });
@@ -195,7 +185,6 @@ function refresh_selected_spritelet() {
 
 function refresh_spritelet_list() {
     els.spritelet_list.replaceChildren();
-    els.spritelet_list_2.replaceChildren();
     for (const id of model.spritelet_ids()) {
         const container = document.createElement("div");
         container.classList.add("image-container")
@@ -215,15 +204,12 @@ function refresh_spritelet_list() {
         container.append(canvas);
         els.spritelet_list.append(container);
 
-        let clone = container.cloneNode(true);
-        clone.lastChild.getContext("2d", {alpha :true}).putImageData(image_data, 0, 0);
-        els.spritelet_list_2.append(clone);
-
         if (id == selected_spritelet_id) {
             container.style.borderWidth = "3px"
         }
     }
     els.spritelet_list.append(els.add_spritelet);
+    refresh_sprite_spritelet_list();
 }
 
 els.delete_spritelet.addEventListener("click", (e) => {
