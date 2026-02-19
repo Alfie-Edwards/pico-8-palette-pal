@@ -48,6 +48,7 @@
         </form>
         <div class="v-box">
           <button id="delete-spritelet" class="button pixel-corners-1">delete</button>
+          <button class="button pixel-corners-1">palette</button>
         </div>
       </div>
     </section>
@@ -64,7 +65,11 @@
         <div class="vline"></div>
 
         <div class="v-box" style="width: min-content;">
-          <div id="selected-sprite-box" class="interactive-image image-container">
+            <div class="h-box" style="height: min-content;">
+              <button id="close-sprite", class="button pixel-corners-1">x</button>
+            </div>
+
+          <div id="selected-sprite-box" class="interactive-image-box image-container">
             <canvas id="selected-sprite" class="interactive-image"></canvas>
             <div id="sprite-component-list-drag-preview" class="drag-preview" hidden>drop spritelet here to add...</div>
           </div>
@@ -84,7 +89,8 @@
               <input id="selected-sprite-pan-y" value="0" type="number" min="0" max="128">
             </form>
             <div class="v-box">
-              <button class="button pixel-corners-1">delete sprite</button>
+              <button id="delete-sprite" class="button pixel-corners-1">delete sprite</button>
+              <button class="button pixel-corners-1">palette</button>
             </div>
           </div>
         </div>
@@ -122,6 +128,7 @@
         <div class="v-box">
           <input type="file" id="load-spritesheet-button" accept="image/png" hidden/>
           <label for="load-spritesheet-button" class="button pixel-corners-1">load image</label>
+          <button class="button pixel-corners-1">palette</button>
         </div>
       </div>
     </section>

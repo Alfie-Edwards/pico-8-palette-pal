@@ -145,6 +145,23 @@ function refresh_component_list() {
         flip_bar.append(flip_x_label);
         flip_bar.append(flip_y_label);
 
+        var button_bar = document.createElement("div");
+        button_bar.classList.add("v-box");
+        var delete_component = document.createElement("button");
+        var palette = document.createElement("button");
+        delete_component.classList.add("button", "pixel-corners-1");
+        palette.classList.add("button", "pixel-corners-1");
+        delete_component.append("delete");
+        palette.append("palette");
+        delete_component.addEventListener("click", (e) => {
+            e.stopPropagation();
+        });
+        palette.addEventListener("click", (e) => {
+            e.stopPropagation();
+        });
+        button_bar.append(delete_component);
+        button_bar.append(palette);
+
         var order_bar = document.createElement("div");
         order_bar.classList.add("v-box");
         var shift_up = document.createElement("button");
@@ -190,6 +207,7 @@ function refresh_component_list() {
 
         container.append(image_container);
         container.append(flip_bar);
+        container.append(button_bar);
         container.append(order_bar);
         els.sprite_component_list.append(container);
     }
@@ -251,12 +269,12 @@ export function refresh_sprite_spritelet_list() {
 
 function refresh_sprite_list() {
     els.sprite_list.replaceChildren();
-    for (const id of model.sprite_ids()) {
+    for (let id of model.sprite_ids()) {
         const container = document.createElement("div");
         container.classList.add("image-container")
 
         container.addEventListener("click", (e) => {
-            set_selected_sprite_id(Number(id));
+            set_selected_sprite_id(id);
         });
 
         var canvas = document.createElement("canvas");
@@ -265,6 +283,8 @@ function refresh_sprite_list() {
         canvas.height = buffer.height;
         var image_data = new ImageData(new Uint8ClampedArray(buffer.data), buffer.width, buffer.height);
         canvas.getContext("2d", { alpha: true }).putImageData(image_data, 0, 0);
+
+        container.append(canvas);
         els.sprite_list.append(container);
     }
     els.sprite_list.append(els.add_sprite);
@@ -310,7 +330,20 @@ els.selected_sprite.addEventListener("pan_changed", (e) => {
 });
 
 els.add_sprite.addEventListener("click", (e) => {
-    model.new_sprite();
+    set_selected_sprite_id(model.new_sprite());
+    refresh_sprite_list();
+});
+
+els.delete_sprite.addEventListener("click", (e) => {
+    model.delete_sprite(selected_sprite_id);
+    set_selected_component_i(null);
+    set_selected_sprite_id(null);
+    refresh_sprite_list();
+});
+
+els.close_sprite.addEventListener("click", (e) => {
+    set_selected_component_i(null);
+    set_selected_sprite_id(null);
     refresh_sprite_list();
 });
 
