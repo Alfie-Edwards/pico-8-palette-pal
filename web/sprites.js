@@ -35,6 +35,7 @@ function set_selected_component_i(value) {
 
     if (value == null) {
         selection_box.set_region(null);
+        return;
     }
 
     var sprite = get_selected_sprite();
@@ -70,7 +71,7 @@ function refresh_component_list() {
     els.sprite_component_list.replaceChildren();
     var sprite = get_selected_sprite();
     if (sprite == null || sprite.num_components == 0) {
-        els.sprite_component_list.append("drag spritelet onto canvas to add layer...")
+        els.sprite_component_list.append("drag in spritelet from right column to add a layer...")
         return;
     }
     for (let i = sprite.num_components - 1; i >= 0; i--) {
@@ -85,11 +86,12 @@ function refresh_component_list() {
         image_container.classList.add("image-container")
 
         container.addEventListener("click", (e) => {
-            set_selected_component_i(Number(i));
+            set_selected_component_i(i);
+            e.stopPropagation();
         });
 
         if (i == selected_component_i) {
-            image_container.style.borderWidth = "3px"
+            image_container.style.borderWidth = "3px";
         }
 
         var canvas = document.createElement("canvas");
@@ -232,6 +234,11 @@ function refresh_component_list() {
 
 export function refresh_sprite_spritelet_list() {
     els.spritelet_list_2.replaceChildren();
+
+    if (model.spritelet_ids().length == 0) {
+        els.spritelet_list_2.append("no spritelets defined...")
+    }
+
     for (const id of model.spritelet_ids()) {
         const container = document.createElement("div");
         container.classList.add("image-container")
@@ -257,9 +264,8 @@ export function refresh_sprite_spritelet_list() {
             els.sprite_component_list_drag_preview.hidden = false;
         });
         container.addEventListener("pointerup", (e) => {
-            els.sprite_component_list_drag_preview.hidden = true;
-            els.drag_ghost.hidden = true;
-            if (document.elementFromPoint(e.clientX, e.clientY)?.closest("#selected-sprite")) {
+            if (document.elementFromPoint(e.clientX, e.clientY)?.closest(".drag-preview")) {
+                console.log("HIT")
                 var sprite = get_selected_sprite();
                 if (sprite != null) {
                     let i = sprite.num_components;
@@ -277,6 +283,8 @@ export function refresh_sprite_spritelet_list() {
                     refresh_selected_sprite();
                 }
             }
+            els.sprite_component_list_drag_preview.hidden = true;
+            els.drag_ghost.hidden = true;
         });
 
         container.append(canvas);
@@ -364,12 +372,15 @@ els.close_sprite.addEventListener("click", (e) => {
     refresh_sprite_list();
 });
 
+els.sprite_component_list.addEventListener("click", (e) => {
+    set_selected_component_i(null);
+})
+
 // Layout behaviour that flex can't acheive.
 new ResizeObserver(entries => {
     const { height } = entries[0].contentRect;
     els.selected_sprite.style.width = height + "px";
+    selection_box.update();
 }).observe(els.selected_sprite);
 
-window.addEventListener("resize", () => {
-    selection_box.update();
-});
+refresh_sprite_spritelet_list();

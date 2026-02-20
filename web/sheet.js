@@ -62,6 +62,7 @@ els.add_spritelet.addEventListener("click", (e) => {
     const x = spritesheet.pan.x + 0.5 * w;
     const y = spritesheet.pan.y + 0.5 * h;
     set_selected_spritelet_id(model.new_spritelet(new Region(x, y, w, h)));
+    e.stopPropagation();
 });
 
 function get_selected_spritelet() {
@@ -157,6 +158,7 @@ function set_selected_spritelet_id(value) {
         els.selected_spritelet_toolbar.hidden = true;
         els.edit_spritelet_divider.hidden = true;
         selection_box.set_region(null);
+        refresh_spritelet_list();
     } else {
         refresh_selected_spritelet();
         els.selected_spritelet_toolbar.hidden = false;
@@ -192,6 +194,7 @@ function refresh_spritelet_list() {
 
         container.addEventListener("click", (e) => {
             set_selected_spritelet_id(Number(id));
+            e.stopPropagation();
         });
 
         var spritelet = model.get_spritelet(id);
@@ -257,12 +260,13 @@ els.spritesheet.addEventListener("pan_changed", (e) => {
     els.spritesheet_pan_y.valueAsNumber = spritesheet.pan.y;
 });
 
+els.spritelet_list.addEventListener("click", (e) => {
+    set_selected_spritelet_id(null);
+})
+
 // Layout behaviour that flex can't acheive.
 new ResizeObserver(entries => {
     const { height } = entries[0].contentRect;
     els.spritesheet.style.width = height + "px";
-}).observe(els.spritesheet);
-
-window.addEventListener("resize", () => {
     selection_box.update();
-});
+}).observe(els.spritesheet);
