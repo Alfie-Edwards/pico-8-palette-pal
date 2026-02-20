@@ -1,6 +1,6 @@
 import {els, model} from "./globals.js";
 import { Pos, Region } from "./pkg/pico_8_palette_pal.js";
-import { DraggableRegion, onDrag, ZoomPanImage } from "./utils.js";
+import { DraggableRegion, H, onDrag, W, ZoomPanImage } from "./utils.js";
 
 const selected_sprite = new ZoomPanImage(els.selected_sprite, els.selected_sprite_minimap);
 const selection_box = new DraggableRegion(selected_sprite, false);
@@ -32,6 +32,10 @@ function set_selected_sprite_id(value) {
 function set_selected_component_i(value) {
     selected_component_i = value;
     refresh_component_list();
+
+    if (value == null) {
+        selection_box.set_region(null);
+    }
 
     var sprite = get_selected_sprite();
     if (sprite == null) {
@@ -65,11 +69,11 @@ function refresh_selected_sprite() {
 function refresh_component_list() {
     els.sprite_component_list.replaceChildren();
     var sprite = get_selected_sprite();
-    if (sprite == null || sprite.num_components() == 0) {
-        els.sprite_component_list.append("drag spritelet over to add...")
+    if (sprite == null || sprite.num_components == 0) {
+        els.sprite_component_list.append("drag spritelet onto canvas to add layer...")
         return;
     }
-    for (let i = sprite.num_components() - 1; i >= 0; i--) {
+    for (let i = sprite.num_components - 1; i >= 0; i--) {
         var component = sprite.get_component(i);
         if (component == null) {
             continue;
@@ -154,6 +158,19 @@ function refresh_component_list() {
         delete_component.append("delete");
         palette.append("palette");
         delete_component.addEventListener("click", (e) => {
+            var sprite = get_selected_sprite();
+            if (sprite != null && i < sprite.num_components) {
+                sprite.delete_component(i);
+                model.update_sprite(selected_sprite_id, sprite);
+                if (i == selected_component_i) {
+                    set_selected_component_i(null);
+                } else if (i < selected_component_i) {
+                    set_selected_component_i(selected_component_i - 1);
+                } else {
+                    refresh_component_list();
+                }
+                refresh_selected_sprite();
+            }
             e.stopPropagation();
         });
         palette.addEventListener("click", (e) => {
@@ -175,7 +192,7 @@ function refresh_component_list() {
             if (sprite != null) {
                 sprite.shift_component_up(i);
                 model.update_sprite(selected_sprite_id, sprite);
-                if (i == selected_component_i && i < (sprite.num_components() - 1)) {
+                if (i == selected_component_i && i < (sprite.num_components - 1)) {
                     set_selected_component_i(i + 1);
                 } else if (i == (selected_component_i - 1)) {
                     set_selected_component_i(i);
@@ -245,16 +262,16 @@ export function refresh_sprite_spritelet_list() {
             if (document.elementFromPoint(e.clientX, e.clientY)?.closest("#selected-sprite")) {
                 var sprite = get_selected_sprite();
                 if (sprite != null) {
-                    let i = sprite.num_components();
-                    let [drop_x, drop_y] = selected_sprite.client_to_image(e.clientX, e.clientY)
-                    sprite.add_component(id, new Pos(drop_x, drop_y));
-                    let component = sprite.get_component(i);
-                    let spritelet = model.get_spritelet(component.spritelet_id);
-                    let [x, y] = selected_sprite.client_to_image(e.clientX, e.clientY);
-                    component.pos = new Pos(
-                        Math.max(0, x - spritelet.region.w),
-                        Math.max(0, y - spritelet.region.h));
-                    sprite.update_component(i, component);
+                    let i = sprite.num_components;
+
+                    let spritelet = model.get_spritelet(id);
+                    const zoom_amount = 2 ** selected_sprite.zoom;
+                    const place_x = selected_sprite.pan.x + (0.5 * W / zoom_amount) - (spritelet.region.w / 2);
+                    const place_y = selected_sprite.pan.y + (0.5 * H / zoom_amount) - (spritelet.region.h / 2);
+                    sprite.add_component(id, new Pos(
+                        Math.max(0, Math.min(W - spritelet.region.w, place_x)),
+                        Math.max(0, Math.min(H - spritelet.region.h, place_y)),
+                    ));
                     model.update_sprite(selected_sprite_id, sprite);
                     set_selected_component_i(i);
                     refresh_selected_sprite();

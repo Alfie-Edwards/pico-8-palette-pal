@@ -146,6 +146,7 @@ impl Sprite {
         }
     }
 
+    #[wasm_bindgen(getter)]
     pub fn num_components(&self) -> usize {
         self.components.len()
     }

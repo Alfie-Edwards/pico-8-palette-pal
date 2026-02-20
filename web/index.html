@@ -58,9 +58,7 @@
         <button id="add-sprite" class="button pixel-corners-1">new sprite</button>
       </div>
       <div id="edit-sprite" class="h-box" hidden>
-        <div id="sprite-component-list" class="v-box">
-          drag spritelet over to add...
-        </div>
+        <div id="sprite-component-list" class="v-box"></div>
 
         <div class="vline"></div>
 
@@ -69,9 +67,9 @@
               <button id="close-sprite", class="button pixel-corners-1">x</button>
             </div>
 
-          <div id="selected-sprite-box" class="interactive-image-box image-container">
+          <div id="selected-sprite-box" class="image-container interactive-image-box">
             <canvas id="selected-sprite" class="interactive-image"></canvas>
-            <div id="sprite-component-list-drag-preview" class="drag-preview" hidden>drop spritelet here to add...</div>
+            <div id="sprite-component-list-drag-preview" class="drag-preview" hidden>drop spritelet here to add layer...</div>
           </div>
 
           <div class="hline"></div>
@@ -81,12 +79,12 @@
               <canvas id="selected-sprite-minimap" class="minimap"></canvas>
             </div>
             <form class="edit-grid">
-              <label for="selected-sprite-zoom">zoom</label>
-              <input id="selected-sprite-zoom" value="0" type="number" min="0" max="5" step="0.5">
-              <label for="selected-sprite-pan-x">x</label>
               <input id="selected-sprite-pan-x" value="0" type="number" min="0" max="128">
-              <label for="selected-sprite-pan-y">y</label>
+              <label for="selected-sprite-pan-x">x</label>
               <input id="selected-sprite-pan-y" value="0" type="number" min="0" max="128">
+              <label for="selected-sprite-pan-y">y</label>
+              <input id="selected-sprite-zoom" value="0" type="number" min="0" max="4" step="0.5">
+              <label for="selected-sprite-zoom">z</label>
             </form>
             <div class="v-box">
               <button id="delete-sprite" class="button pixel-corners-1">delete sprite</button>
@@ -107,7 +105,7 @@
 
   <div class="pixel-corners-2 ui-panel" id="right-panel">
     <section class="tab-pane" data-tab="sheet">
-      <div id="spritesheet-box" class="interactive-image-box image-container">
+      <div id="spritesheet-box" class="image-container interactive-image-box">
         <canvas id="spritesheet" class="interactive-image"></canvas>
       </div>
 
@@ -118,12 +116,12 @@
           <canvas id="spritesheet-minimap" class="minimap"></canvas>
         </div>
         <form class="edit-grid">
-          <label for="spritesheet-zoom">zoom</label>
-          <input id="spritesheet-zoom" value="0" type="number" min="0" max="5" step="0.5">
-          <label for="spritesheet-pan-x">x</label>
           <input id="spritesheet-pan-x" value="0" type="number" min="0" max="128">
-          <label for="spritesheet-pan-y">y</label>
+          <label for="spritesheet-pan-x">x</label>
           <input id="spritesheet-pan-y" value="0" type="number" min="0" max="128">
+          <label for="spritesheet-pan-y">y</label>
+          <input id="spritesheet-zoom" value="0" type="number" min="0" max="4" step="0.5">
+          <label for="spritesheet-zoom">z</label>
         </form>
         <div class="v-box">
           <input type="file" id="load-spritesheet-button" accept="image/png" hidden/>

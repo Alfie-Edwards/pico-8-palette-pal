@@ -1,7 +1,7 @@
 import { Region } from "./globals.js";
 
-const W = 128
-const H = 128
+export const W = 128
+export const H = 128
 
 export function onDrag(element, handler) {
     var origin = {x: 0, y: 0};
